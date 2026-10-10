@@ -33,59 +33,56 @@ AI4I 2020 Predictive Maintenance Dataset [Dataset]. (2020). UCI Machine Learning
 
 ## Milestone 2 — Data Understanding & Cleaning
 
-The original dataset was already clean (0 missing values, 0 duplicates). To practice a
-full cleaning workflow, we introduced realistic data issues into a copy of it
-(`not_clean_data.csv`, 10,200 rows) and then cleaned it step by step.
+The original dataset had no missing values and no duplicates. To practice a
+full cleaning workflow, we introduced realistic data issues (missing values and
+duplicate rows) into a copy of it (`ai4i2020_dirty.csv`, 10,100 rows) and then
+cleaned it step by step. The statistical outliers are natural to the original data.
 
 ### Data quality findings
-- **Missing values:** 7,864 cells across the 5 numeric columns
-- **Duplicates:** 200 rows sharing the same `UDI` (147 exact copies + 53 near-duplicates with a blank or corrupted cell)
-- **Impossible values:** 30 readings (6 per sensor), e.g. air temperature of 999 K, negative torque and speed, tool wear of -20 min
-- **Incorrect data types:** `Rotational speed` and `Tool wear` loaded as `float64` although they are whole numbers
+- **Missing values:** 4,040 cells across the 5 numeric columns, affecting 3,437 rows (about 34%)
+- **Duplicates:** 100 duplicate rows, all exact copies of existing rows (100 `UDI` values appear twice)
+- **Statistical outliers (1.5×IQR rule):** 394 values in `Rotational speed` and 66 in `Torque` (460 in total); none in the other three numeric columns
 - **Checked and clean:** `Type` and `Product ID` (no blanks, valid categories)
 
 ### Cleaning decisions
+The steps run in this order in the notebook.
+
 | # | Decision | Reason |
 |---|---|---|
-| 1 | Removed duplicates by `UDI`, keeping the most complete row (200 rows removed) | `duplicated()` missed 53 rows because their copies differed in a blank or corrupted cell. Removing them first keeps later statistics undistorted |
-| 2 | Set values outside physical limits to `NaN` (30 values) | IQR clipping is blind to physics: it treated -20 min of wear as valid (its lower bound was -112) and replaced 999 K with an invented boundary number |
-| 3 | Filled missing cells (7,709) with the column median | 56% of rows had at least one blank, so dropping rows would decimate the data. The median is robust to skew |
-| 4 | Converted `Rotational speed` and `Tool wear` to `int64` | A column with blanks is stored as `float64` and stays that way after filling. We restored the true whole-number type |
-| 5 | Kept natural outliers | Extreme values are symptoms of failure: 88.7% of Torque outliers are failures (vs 3.39% overall) |
-
-Physical limits used: Air temperature 280–320 K, Process temperature 290–330 K,
-Rotational speed 1–5,000 rpm, Torque 0.1–100 Nm, Tool wear 0–300 min.
+| 1 | Treated outliers with IQR clipping: for each numeric sensor column, computed Q1, Q3 and IQR, then capped values to `[Q1 − 1.5×IQR, Q3 + 1.5×IQR]` with `clip()` | To prevent extreme statistical outliers from skewing the machine learning model while preserving the core data distribution. No rows were removed in this step |
+| 2 | Filled missing cells (4,040) with the column mean using `fillna(mean)` | About 34% of rows had at least one blank, so dropping rows would remove a third of the dataset. The mean preserves the average of the sensor readings |
+| 3 | Removed duplicate rows with `drop_duplicates()` (100 rows removed) | All 100 duplicates were exact copies, so comparing full rows removes them safely. This step runs last, leaving one row per `UDI` |
 
 ### Before vs After
 | Metric | Before | After |
 |---|---|---|
-| Total rows | 10,200 | 10,000 |
-| Missing cells | 7,864 | 0 |
-| Rows sharing a `UDI` | 200 | 0 |
-| Impossible values | 30 | 0 (set to `NaN`, then median-filled) |
-| Speed & Wear type | float64 | int64 |
-| Machine failure rate | 3.35% | 3.39% |
+| Total rows | 10,100 | 10,000 |
+| Missing cells | 4,040 | 0 |
+| Duplicate rows | 100 | 0 |
+| Outlier values (1.5×IQR rule) | 460 | 0 (capped to the limits) |
+| Machine failure rate | 3.37% | 3.39% |
 
 ### Remaining data quality issues (documented, not fixed)
-- **Failure flags vs readings:** in 224 rows the filled sensor values no longer reproduce the original `HDF`, `PWF` or `OSF` flag. Median-filling gives a stand-in, not the true reading, so we kept the original labels.
+- **Failure flags vs readings:** in 213 rows (2.1%), the imputed or clipped sensor values no longer reproduce the original `HDF`, `PWF` or `OSF` flag. Mean-filling and clipping give statistical stand-ins, not the true readings, so we kept the original labels.
 - **Known quirk of the public dataset:** 27 rows where `Machine failure` does not match the five failure flags. It exists in the original UCI file.
 - **Class imbalance (3.39% failures):** a property of the problem, to be handled at the modeling stage.
+- **Open question — effect of capping on the failure signal:** only 66 rows have extreme `Torque` (outside 13.09–66.99 Nm), yet 58 of them (88%) are failures, versus 3.39% overall, and they hold about 17% of all failures. Capping these values may have weakened this warning sign. At the modeling stage we will compare results with and without capping (using Recall) and consider keeping the original values or adding an `is_outlier` flag.
 
 ---
 
 ## Repository Contents
 - `ms1_show_data_code.ipynb` — data loading and initial exploration (Milestone 1)
 - `ai4i2020.csv` — the original dataset
-- `dirty_data_code.ipynb` — creates `not_clean_data.csv` by injecting data issues (Milestone 2)
-- `not_clean_data.csv` — the raw working file with data issues (Milestone 2)
-- `ms2_clean_data.ipynb` — full cleaning notebook with a Decision / Reason for every step (Milestone 2)
-- `clean_data.csv` — the final clean dataset, 10,000 rows (Milestone 2)
+- `dirty_data_code.ipynb` — creates the dirty copy of the dataset by injecting data issues (Milestone 2)
+- `ai4i2020_dirty.csv` — the raw working file with data issues, 10,100 rows (Milestone 2)
+- `code_for_cleandatepresentation.ipynb` — cleaning notebook: IQR clipping, mean imputation, duplicate removal (Milestone 2)
+- `cleaned_data.csv` — the final clean dataset, 10,000 rows (Milestone 2)
 
 ## How to Run
-1. Install the requirements: `pip install pandas numpy matplotlib`
+1. Install the requirements: `pip install pandas matplotlib`
 2. Open the notebooks in Jupyter Notebook or Google Colab, with the CSV files in the same folder (or update the path in the first cell)
 3. Run `ms1_show_data_code.ipynb` for the Milestone 1 exploration
-4. Run `ms2_clean_data.ipynb` to reproduce `clean_data.csv` from `not_clean_data.csv`
+4. Run `code_for_cleandatepresentation.ipynb` to reproduce `cleaned_data.csv` from `ai4i2020_dirty.csv` (set the file path in the first cell to `ai4i2020_dirty.csv`)
 
 ## Status
 - Milestone 1: Dataset selection, loading, and initial exploration — complete
