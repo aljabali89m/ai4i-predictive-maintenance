@@ -88,11 +88,203 @@ tr.wrong td{background:#3A1620}
 /* ---- compact layout: fits the window, only the main panel scrolls ---- */
 html,body{height:100%;overflow:hidden}
 body{font-size:14px;min-height:0}
-.app{height:100vh;min-height:0;grid-template-columns:190px 1fr}
-.app>div{height:100vh;overflow-y:auto;min-width:0}
-aside{padding:18px 10px;gap:18px;height:100vh}
-.brand svg{width:38px;height:38px}.brand .n{font-size:20px}.brand small{font-size:11px}
-.nav{padding:9px 12px;font-size:13.5px;gap:10px;margin-bottom:4px}
+.app{
+  height:100vh;
+  min-height:0;
+  grid-template-columns:235px 1fr;
+  transition:grid-template-columns .3s cubic-bezier(.4,0,.2,1);
+}
+.app.collapsed{
+  grid-template-columns:0px 1fr;
+}
+aside{
+  width:235px;
+  overflow:hidden;
+  white-space:nowrap;
+  padding:22px 14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  height:100vh;
+  background:linear-gradient(180deg, rgba(8,24,42,0.94) 0%, rgba(5,17,31,0.97) 100%);
+  border-right:1px solid rgba(56,208,245,0.14);
+  box-shadow:inset -1px 0 0 rgba(255,255,255,0.03), 8px 0 24px rgba(0,0,0,0.25);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  position:relative;
+  z-index:10;
+  transition:width .3s cubic-bezier(.4,0,.2,1), padding .3s cubic-bezier(.4,0,.2,1), opacity .25s ease, border-color .3s ease;
+}
+.app.collapsed aside{
+  width:0;
+  padding:0;
+  border-right-color:transparent;
+  opacity:0;
+  pointer-events:none;
+}
+.brand{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  padding-bottom:18px;
+  border-bottom:1px solid rgba(42,111,168,0.25);
+  text-align:center;
+}
+.brand-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+}
+.aside-close-btn{
+  width:28px;
+  height:28px;
+  border-radius:6px;
+  background:rgba(18,48,77,0.7);
+  border:1px solid rgba(42,111,168,0.35);
+  color:#9FB6C8;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  padding:0;
+  transition:all .2s ease;
+}
+.aside-close-btn:hover{
+  background:#1B4973;
+  color:#38D0F5;
+  border-color:#38D0F5;
+  box-shadow:0 0 10px rgba(56,208,245,0.25);
+}
+.sidebar-toggle-btn{
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  background:rgba(14,38,64,0.7);
+  border:1px solid rgba(42,111,168,0.35);
+  color:#9FB6C8;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  padding:0;
+  transition:all .2s ease;
+}
+.sidebar-toggle-btn:hover{
+  background:#15446E;
+  color:#38D0F5;
+  border-color:#38D0F5;
+  box-shadow:0 0 12px rgba(56,208,245,0.3);
+}
+.brand-icon{
+  width:46px;
+  height:46px;
+  border-radius:12px;
+  background:linear-gradient(135deg, rgba(56,208,245,0.18), rgba(14,165,233,0.06));
+  border:1px solid rgba(56,208,245,0.35);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 0 18px rgba(56,208,245,0.2);
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+.brand:hover .brand-icon{
+  transform:scale(1.05) rotate(4deg);
+  box-shadow:0 0 24px rgba(56,208,245,0.35);
+}
+.brand .n{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px}
+.brand .n span{color:#38D0F5;text-shadow:0 0 12px rgba(56,208,245,0.4)}
+.brand small{font-size:11px;color:#7EA2BE;letter-spacing:0.3px}
+
+nav{display:flex;flex-direction:column;gap:6px}
+.nav{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 14px;
+  border-radius:10px;
+  color:#9FB6C8;
+  font-size:13.5px;
+  font-weight:500;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  overflow:hidden;
+  border:1px solid transparent;
+}
+.nav svg{
+  width:18px;
+  height:18px;
+  stroke:currentColor;
+  transition:transform .2s ease, stroke .2s ease;
+}
+.nav:hover{
+  background:rgba(20,64,106,0.35);
+  color:#E6F1FA;
+  border-color:rgba(56,208,245,0.15);
+  transform:translateX(3px);
+}
+.nav:hover svg{
+  stroke:#38D0F5;
+  transform:scale(1.1);
+}
+.nav.on{
+  background:linear-gradient(90deg, rgba(20,64,106,0.75), rgba(12,38,64,0.55));
+  color:#fff;
+  font-weight:600;
+  border:1px solid rgba(56,208,245,0.4);
+  box-shadow:0 4px 14px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.nav.on::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:22%;
+  height:56%;
+  width:3.5px;
+  border-radius:0 4px 4px 0;
+  background:#38D0F5;
+  box-shadow:0 0 10px #38D0F5;
+}
+.nav.on svg{
+  stroke:#38D0F5;
+  filter:drop-shadow(0 0 6px rgba(56,208,245,0.5));
+}
+
+.sidebar-status{
+  margin-top:auto;
+  padding:12px 14px;
+  border-radius:10px;
+  background:rgba(10,30,52,0.6);
+  border:1px solid rgba(42,111,168,0.25);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.status-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#22C55E;
+  box-shadow:0 0 8px #22C55E;
+  position:relative;
+  flex-shrink:0;
+}
+.status-dot::after{
+  content:'';
+  position:absolute;
+  inset:-3px;
+  border-radius:50%;
+  border:1px solid #22C55E;
+  animation:radar 2s infinite ease-out;
+}
+@keyframes radar{
+  0%{transform:scale(0.8);opacity:1}
+  100%{transform:scale(2.2);opacity:0}
+}
+.status-text{display:flex;flex-direction:column;gap:1px;font-size:11px;color:#7EA2BE}
+.status-text b{color:#E6F1FA;font-size:12px;font-weight:600}
+
 header.top{padding:10px 24px;font-size:15px}
 .hero{padding:18px 24px 0}h1{font-size:34px}
 .hero .sub{font-size:16px}.hero p{font-size:13.5px;margin-top:8px}
@@ -122,19 +314,54 @@ table{font-size:12.5px}th,td{padding:7px 10px}
 <body>
 <div class="app">
 <aside>
-<div class="brand">
-<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#38D0F5" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>
-<div class="n">Makina <span>Sense</span></div><small>AI4I Predictive Maintenance</small>
-</div>
-<nav>
-<a class="nav" href="#dashboard">Dashboard</a>
-<a class="nav" href="#dataset">Dataset Analysis</a>
-<a class="nav" href="#predict">Single Machine</a>
-</nav>
+  <div class="brand">
+    <div class="brand-header">
+      <div style="width:28px"></div>
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38D0F5" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>
+      </div>
+      <button id="aside-close-btn" class="aside-close-btn" title="Collapse sidebar (ادخل السايدبار)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </div>
+    <div>
+      <div class="n">Makina <span>Sense</span></div>
+      <small>AI4I Predictive Maintenance</small>
+    </div>
+  </div>
+  <nav>
+    <a class="nav" href="#dashboard" title="Dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      <span>Dashboard</span>
+    </a>
+    <a class="nav" href="#dataset" title="Dataset Analysis">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <span>Dataset Analysis</span>
+    </a>
+    <a class="nav" href="#predict" title="Single Machine">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+      <span>Single Machine</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-status">
+    <div class="status-dot"></div>
+    <div class="status-text">
+      <b>Engine Online</b>
+      <span>v1.0 ML Stack Active</span>
+    </div>
+  </div>
 </aside>
 
 <div>
-<header class="top"><div class="breadcrumb">Makina Sense &rsaquo; <span id="bread-page">Dashboard</span></div></header>
+<header class="top">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Toggle Sidebar (Ctrl+B)" aria-label="Toggle Sidebar">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+    </button>
+    <div class="breadcrumb">Makina Sense &rsaquo; <span id="bread-page">Dashboard</span></div>
+  </div>
+</header>
 <div id="toast-wrap"></div>
 <div id="loading-overlay" hidden><div class="spinner"></div><span id="loading-msg">Analyzing dataset…</span></div>
 
@@ -316,6 +543,23 @@ function route() {
   const bp = $("#bread-page"); if (bp) bp.textContent = PAGE_NAMES[v] || v;
 }
 addEventListener("hashchange", route); route();
+
+/* ---- collapsible sidebar ---- */
+function toggleSidebar() {
+  const app = $(".app");
+  const isC = app.classList.toggle("collapsed");
+  try { localStorage.setItem('makina_sidebar_collapsed', isC ? '1' : '0'); } catch(e){}
+}
+$("#sidebar-toggle")?.addEventListener("click", toggleSidebar);
+$("#aside-close-btn")?.addEventListener("click", toggleSidebar);
+window.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
+    e.preventDefault(); toggleSidebar();
+  }
+});
+if (localStorage.getItem('makina_sidebar_collapsed') === '1') {
+  $(".app").classList.add("collapsed");
+}
 
 /* ---- shared state ---- */
 const fileIn = $("#file"), drop = $("#drop");
