@@ -37,9 +37,9 @@ REFERENCE = {
     "types": {"TWF": {"f1": 0.000, "cv": 0.063}, "HDF": {"f1": 0.949, "cv": 0.950},
               "PWF": {"f1": 1.000, "cv": 0.984}, "OSF": {"f1": 1.000, "cv": 0.995}},
 }
-SINGLE_LIMITS = {"air": ("Air temperature", 250, 400), "proc": ("Process temperature", 250, 400),
-                 "rpm": ("Rotational speed", 0, 10000), "torque": ("Torque", 0, 200),
-                 "wear": ("Tool wear", 0, 1000)}
+# Keys for single-machine input — no range limits, any finite number is accepted
+SINGLE_KEYS = {"air": "Air temperature", "proc": "Process temperature",
+               "rpm": "Rotational speed", "torque": "Torque", "wear": "Tool wear"}
 
 
 def predict_df(df):
@@ -85,13 +85,13 @@ def api_predict():
     if machine_type not in P.TYPE_CODES:
         return jsonify(error="Choose a machine type (L, M or H)."), 400
     values = {}
-    for key, (label, lo, hi) in SINGLE_LIMITS.items():
+    for key, label in SINGLE_KEYS.items():
         try:
             v = float(data.get(key))
         except (TypeError, ValueError):
             return jsonify(error=f"{label} must be a number."), 400
-        if not math.isfinite(v) or not lo <= v <= hi:
-            return jsonify(error=f"{label} must be between {lo} and {hi}."), 400
+        if not math.isfinite(v):
+            return jsonify(error=f"{label} must be a finite number."), 400
         values[key] = v
     r = P.predict_machine(machine_type, values["air"], values["proc"],
                           values["rpm"], values["torque"], values["wear"])
