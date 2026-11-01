@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makina Sense</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:radial-gradient(1200px 600px at 80% -10%,#10375C,#071626 60%) fixed;color:#E6F1FA;min-height:100vh}
+a{text-decoration:none}svg{flex:none}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+aside{background:#081A2C;border-right:1px solid #1A3A58;padding:28px 14px;display:flex;flex-direction:column;gap:28px;position:sticky;top:0;height:100vh}
+.brand{text-align:center}.brand .n{font-size:26px;font-weight:700;color:#fff}.brand .n span,h1 span{color:#38D0F5}.brand small{font-size:12px;color:#9FB6C8}
+.nav{display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:10px;color:#C5D6E4;font-size:15px;font-weight:500;margin-bottom:6px}
+.nav:hover{background:#12304D}.nav.on{background:#14406A;color:#fff;border:1px solid #2A6FA8}
+header.top{padding:18px 40px;border-bottom:1px solid #1A3A58;font-size:20px;font-weight:600;color:#fff}
+.hero{padding:36px 40px 0}h1{margin:0;font-size:52px;font-weight:700;color:#fff}
+.hero .sub{font-size:21px;margin-top:6px;color:#fff}.hero p{margin:14px 0 0;max-width:640px;font-size:16px;line-height:1.5;color:#C5D6E4}
+.pg{padding:24px 40px 40px;display:flex;flex-direction:column;gap:24px}
+.pt{padding:28px 40px 0;margin:0;font-size:30px;color:#fff}
+.row{display:grid;gap:24px}.r1{grid-template-columns:minmax(0,2fr) minmax(260px,1fr)}.r2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.card{background:linear-gradient(180deg,#0F2A45,#0B2038);border:1px solid #1F4468;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.ch{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 22px;border-bottom:1px solid #1F4468;background:#102C49;flex-wrap:wrap}
+.ch h2{margin:0;font-size:18px;font-weight:600;color:#fff}.ch p{margin:2px 0 0;font-size:13px;color:#C5D6E4}
+.bd{padding:20px 22px;display:flex;flex-direction:column;gap:14px}.mut{font-size:13px;color:#B4C7D6;line-height:1.5;margin:0}
+.stats{display:flex;flex-wrap:wrap;gap:16px;padding:22px}
+.stat{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:120px;text-align:center}
+.stat b{font-size:32px;font-weight:700;color:#38D0F5}.stat span{font-size:14px;color:#C5D6E4}
+.pill{display:inline-block;border:1px solid #2F5F8C;background:#12304D;border-radius:8px;padding:8px 14px;font-size:14px;margin:0 8px 8px 0}
+.fld{display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:500}
+.fld input,.fld select,.sel{height:46px;border:1px solid #2F5F8C;border-radius:8px;padding:0 14px;font:inherit;font-size:15px;color:#fff;background:#0C2239}
+.fld input::placeholder{color:#8DA8BF}
+:focus-visible{outline:2px solid #38D0F5;outline-offset:2px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px}
+button,.btn{height:48px;padding:0 22px;border:0;border-radius:10px;background:linear-gradient(90deg,#22D3EE,#0EA5E9);color:#04202E;font:inherit;font-size:15px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+button.sec{background:#12304D;color:#E6F1FA;border:1px solid #2F5F8C;height:40px;font-weight:600}
+button:disabled{opacity:.55;cursor:not-allowed}
+.err{color:#FCA5A5;font-size:14px;min-height:20px;margin:0}
+.res{flex:1;margin:22px;border:1px solid #1F4468;border-radius:12px;background:#0A1E34;padding:26px;min-height:240px;display:flex;flex-direction:column;justify-content:center;gap:14px}
+.empty{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}.empty b{font-size:20px;color:#fff}.empty span{font-size:14px;color:#C5D6E4}
+.big{font-size:52px;font-weight:700;line-height:1.1;color:#fff}
+.badge{display:inline-block;font-weight:700;font-size:13px;padding:5px 12px;border-radius:999px;white-space:nowrap}
+.Low{background:#DCFCE7;color:#14532D}.Medium{background:#FEF9C3;color:#713F12}.High{background:#FFEDD5;color:#7C2D12}.Critical{background:#FEE2E2;color:#7F1D1D}
+.bar{height:10px;border-radius:5px;background:#1B3A58;overflow:hidden}.bar i{display:block;height:100%;background:#38A8E0}.bar i.hit{background:#F59E0B}
+.t{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;gap:10px}
+.act{background:#0F3A4A;border:1px solid #1E6F8A;border-radius:10px;padding:12px 14px;font-size:14px}.act b{display:block;color:#fff}
+.warn{background:#3A2E0F;border:1px solid #8A6A1E;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;color:#FDE7B0}
+.weak{color:#FBBF24;font-size:12px;font-weight:600}
+#drop{border:2px dashed #2F5F8C;border-radius:12px;padding:30px;text-align:center;cursor:pointer;background:#0A1E34;display:flex;flex-direction:column;gap:6px;align-items:center}
+#drop.over,#drop:hover{border-color:#38D0F5;background:#0E2A45}#drop b{font-size:17px;color:#fff}#drop span{font-size:14px;color:#C5D6E4}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #1B3A58;white-space:nowrap}
+th{color:#9FC3DD;font-weight:600;background:#0D2540;position:sticky;top:0}td.n,th.n{text-align:right}
+tr.wrong td{background:#3A1620}
+.cm{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;font-size:13px;text-align:center;align-items:center;max-width:420px}
+.cm div.c{border-radius:8px;padding:12px 8px;background:#12304D}.cm .g{background:#0F3F3A}.cm .b{background:#4A1D2A}.cm b{display:block;font-size:22px;color:#fff}
+.pager{display:flex;align-items:center;gap:12px;font-size:13px;color:#C5D6E4;flex-wrap:wrap}
+@media(max-width:900px){.app{grid-template-columns:1fr}aside{position:static;height:auto}.r1{grid-template-columns:1fr}.grid{grid-template-columns:1fr}h1{font-size:38px}header.top,.hero,.pg,.pt{padding-left:20px;padding-right:20px}}
+
+/* ---- compact layout: fits the window, only the main panel scrolls ---- */
+html,body{height:100%;overflow:hidden}
+body{font-size:14px;min-height:0}
+.app{height:100vh;min-height:0;grid-template-columns:190px 1fr}
+.app>div{height:100vh;overflow-y:auto;min-width:0}
+aside{padding:18px 10px;gap:18px;height:100vh}
+.brand svg{width:38px;height:38px}.brand .n{font-size:20px}.brand small{font-size:11px}
+.nav{padding:9px 12px;font-size:13.5px;gap:10px;margin-bottom:4px}
+header.top{padding:10px 24px;font-size:15px}
+.hero{padding:18px 24px 0}h1{font-size:34px}
+.hero .sub{font-size:16px}.hero p{font-size:13.5px;margin-top:8px}
+.pg{padding:16px 24px 24px;gap:16px}
+.pt{padding:16px 24px 0;font-size:22px}
+.row{gap:16px}.r2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.card{border-radius:10px}
+.ch{padding:10px 16px}.ch h2{font-size:15px}.ch p{font-size:12px}
+.bd{padding:12px 16px;gap:10px}
+.stats{padding:14px 16px;gap:10px}.stat{min-width:90px;gap:3px}
+.stat b{font-size:22px}.stat span{font-size:12px}
+.pill{padding:5px 10px;font-size:12.5px;margin:0 6px 6px 0}
+.fld{gap:5px;font-size:13px}
+.fld input,.fld select,.sel{height:36px;font-size:13.5px;padding:0 10px}
+.grid{gap:10px 14px}
+button,.btn{height:38px;padding:0 16px;font-size:13.5px}
+button.sec{height:32px}
+.res{margin:14px;padding:16px;min-height:160px;gap:10px}
+.big{font-size:38px}.empty b{font-size:16px}
+#drop{padding:16px}#drop b{font-size:14.5px}
+table{font-size:12.5px}th,td{padding:7px 10px}
+.t{font-size:13px}.act{padding:9px 12px;font-size:13px}
+.cm b{font-size:18px}.cm div.c{padding:8px 6px}
+@media(max-width:900px){.app{grid-template-columns:1fr;height:auto}html,body{overflow:auto}.app>div{height:auto}aside{height:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+<div class="brand">
+<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#38D0F5" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>
+<div class="n">Makina <span>Sense</span></div><small>AI4I Predictive Maintenance</small>
+</div>
+<nav>
+<a class="nav" href="#dashboard">Dashboard</a>
+<a class="nav" href="#dataset">Dataset Analysis</a>
+<a class="nav" href="#predict">Single Machine</a>
+</nav>
+</aside>
+
+<div>
+<header class="top">AI4I Predictive Maintenance</header>
+
+<!-- ============ DASHBOARD ============ -->
+<div data-view="dashboard">
+<section class="hero">
+<h1>Makina <span>Sense</span></h1>
+<div class="sub">AI-Powered Predictive Maintenance for Industrial Machines</div>
+<p>Upload a machine dataset and get, for every row: failure probability, failure yes/no, risk level, failure type and the recommended maintenance action.</p>
+<p style="margin-top:18px"><a class="btn" href="#dataset">Analyze a dataset</a></p>
+</section>
+<div class="pg">
+<div class="row r1">
+<section class="card">
+<div class="ch"><div><h2>Model Performance — Random Forest (Failure Prediction)</h2><p>Test set of 2,500 rows (failure_detection notebook)</p></div></div>
+<div class="stats">
+<div class="stat"><span>Accuracy</span><b id="m-acc"></b></div>
+<div class="stat"><span>Precision</span><b id="m-pre"></b></div>
+<div class="stat"><span>Recall</span><b id="m-rec"></b></div>
+<div class="stat"><span>F1-Score</span><b id="m-f1"></b></div>
+</div>
+</section>
+<section class="card">
+<div class="ch"><h2>Models</h2></div>
+<div class="bd">
+<div><span class="pill">Model 1 · Failure / Not Failure</span><span class="pill">4 type models · TWF, HDF, PWF, OSF</span></div>
+<p class="mut">The type models only run on rows where Model 1 predicts a failure.</p>
+</div>
+</section>
+</div>
+<section class="card">
+<div class="ch"><div><h2>Failure type models</h2><p>F1 on the single test split and on 5-fold cross-validation (failure_type notebook)</p></div></div>
+<div class="tw"><table>
+<thead><tr><th>Type</th><th>Name</th><th class="n">Test F1</th><th class="n">CV F1</th><th>Reliability</th></tr></thead>
+<tbody id="typetbl"></tbody></table></div>
+<div class="bd"><p class="mut">RNF (random failure) is not modelled: it is random by design in the dataset, so no sensor pattern can predict it.</p></div>
+</section>
+</div>
+</div>
+
+<!-- ============ DATASET ============ -->
+<div data-view="dataset" hidden>
+<h2 class="pt">Dataset Analysis</h2>
+<div class="pg">
+<section class="card">
+<div class="ch"><div><h2>Upload a dataset</h2><p>CSV in the same format as ai4i2020 — every row is predicted.</p></div></div>
+<div class="bd">
+<label id="drop" for="file"><b>Choose a CSV file or drag it here</b><span id="fname">No file chosen</span></label>
+<input id="file" type="file" accept=".csv,text/csv" hidden>
+<label class="fld" style="max-width:420px">Failure threshold: <span id="thrv">0.50</span>
+<input id="thr" type="range" min="0.1" max="0.9" step="0.05" value="0.5" style="accent-color:#38D0F5;padding:0"></label>
+<p class="mut"><b>Required columns:</b> Type (L/M/H), Air temperature [K], Process temperature [K], Rotational speed [rpm], Torque [Nm], Tool wear [min].<br>
+<b>Optional:</b> Product ID, and Machine failure / TWF / HDF / PWF / OSF — if present, the real accuracy, recall and F1 on your file are calculated.</p>
+<p class="err" id="derr" role="alert"></p>
+<div><button id="az">Analyze dataset</button></div>
+</div>
+</section>
+
+<div id="out" hidden style="display:flex;flex-direction:column;gap:24px">
+<section class="card"><div class="stats" id="sum"></div></section>
+<div class="row r2">
+<section class="card"><div class="ch"><h2>Risk levels</h2></div><div class="bd" id="riskbars"></div></section>
+<section class="card"><div class="ch"><h2>Predicted failure types</h2></div><div class="bd" id="typebars"></div></section>
+</div>
+<section class="card" id="metcard" hidden>
+<div class="ch"><div><h2>Accuracy on your file</h2><p>Compared with the real labels in the uploaded file</p></div></div>
+<div class="stats" id="metstats"></div>
+<div class="bd" style="flex-direction:row;flex-wrap:wrap;gap:32px;align-items:flex-start">
+<div class="cm" id="cm"></div>
+<div class="tw" style="flex:1;min-width:280px"><table><thead><tr><th>Type</th><th class="n">Real cases</th><th class="n">Precision</th><th class="n">Recall</th><th class="n">F1</th></tr></thead><tbody id="mettypes"></tbody></table></div>
+</div>
+<div class="bd"><div class="warn">If this file is the original dataset, about 80% of its rows were used to train the models, so these scores look better than they would on new machines. Use data the models never saw for an honest score.</div></div>
+</section>
+<section class="card">
+<div class="ch"><h2>Predictions</h2>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><select class="sel" id="flt" aria-label="Filter rows"></select><button class="sec" id="dl">Download CSV</button></div></div>
+<div class="tw"><table id="tbl"></table></div>
+<div class="bd"><div class="pager"><button class="sec" id="prev">Previous</button><span id="pinfo"></span><button class="sec" id="next">Next</button></div></div>
+</section>
+</div>
+</div>
+</div>
+
+<!-- ============ SINGLE MACHINE ============ -->
+<div data-view="predict" hidden>
+<h2 class="pt">Single Machine</h2>
+<div class="pg"><div class="row r2">
+<section class="card">
+<div class="ch"><div><h2>Predict Machine Failure</h2><p>Enter the operating parameters of one machine.</p></div></div>
+<form id="f" class="bd" novalidate>
+<div class="grid">
+<label class="fld">Machine Type<select name="machine_type"><option value="L">L (Low)</option><option value="M">M (Medium)</option><option value="H">H (High)</option></select></label>
+<label class="fld">Process Temperature [K]<input name="proc" type="number" step="any" placeholder="e.g., 310.0"></label>
+<label class="fld">Air Temperature [K]<input name="air" type="number" step="any" placeholder="e.g., 300.0"></label>
+<label class="fld">Torque [Nm]<input name="torque" type="number" step="any" placeholder="e.g., 40.0"></label>
+<label class="fld">Rotational Speed [rpm]<input name="rpm" type="number" step="any" placeholder="e.g., 1500"></label>
+<label class="fld">Tool Wear [min]<input name="wear" type="number" step="any" placeholder="e.g., 0"></label>
+</div>
+<p class="err" id="err" role="alert"></p>
+<button id="go" type="submit">Predict</button>
+</form>
+</section>
+<section class="card">
+<div class="ch"><div><h2>Prediction Result</h2><p>Whether the machine is likely to fail, and why.</p></div></div>
+<div class="res" id="res" aria-live="polite"><div class="empty"><b>No prediction yet</b><span>Enter the machine data and click “Predict” to see the result.</span></div></div>
+</section>
+</div></div>
+</div>
+</div>
+</div>
+
+<script>
+const REF = {{ ref|tojson }}, NAMES = {{ type_names|tojson }};
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pct = (v, d = 1) => (v * 100).toFixed(d) + "%";
+const WEAK = {TWF: "unreliable"};
+
+/* ---- routing ---- */
+const views = [...document.querySelectorAll("[data-view]")], links = [...document.querySelectorAll("nav a")];
+function route() {
+  let v = (location.hash || "#dashboard").slice(1);
+  if (!views.some(x => x.dataset.view === v)) v = "dashboard";
+  views.forEach(x => x.hidden = x.dataset.view !== v);
+  links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + v));
+}
+addEventListener("hashchange", route); route();
+
+/* ---- dashboard reference numbers ---- */
+$("#m-acc").textContent = pct(REF.failure.accuracy, 2); $("#m-pre").textContent = pct(REF.failure.precision, 2);
+$("#m-rec").textContent = pct(REF.failure.recall, 2);   $("#m-f1").textContent = pct(REF.failure.f1, 2);
+$("#typetbl").innerHTML = Object.entries(REF.types).map(([t, m]) =>
+  `<tr><td>${t}</td><td>${esc(NAMES[t])}</td><td class="n">${m.f1.toFixed(3)}</td><td class="n">${m.cv.toFixed(3)}</td>
+   <td>${WEAK[t] ? '<span class="weak">Unreliable — rarely detected</span>' : "Good"}</td></tr>`).join("");
+
+/* ---- single machine ---- */
+const f = $("#f"), res = $("#res");
+function show(r) {
+  let h = `<div class="big">${pct(r.failure_probability)}</div>
+    <div><span class="badge ${esc(r.risk_level)}">${esc(r.risk_level)} risk</span></div>
+    <div>${r.failure ? "Failure predicted." : "No failure predicted."}</div>`;
+  if (r.failure) {
+    h += Object.entries(r.type_probabilities).map(([t, p]) =>
+      `<div><div class="t"><span>${t} · ${esc(r.type_names[t])} ${WEAK[t] ? '<span class="weak">low reliability</span>' : ""}</span><b>${pct(p)}</b></div>
+       <div class="bar"><i class="${r.predicted_types.includes(t) ? "hit" : ""}" style="width:${p * 100}%"></i></div></div>`).join("");
+    h += r.predicted_types.map((t, i) => `<div class="act"><b>${esc(r.type_names[t])}</b>${esc(r.actions[i])}</div>`).join("");
+  }
+  res.innerHTML = h;
+}
+f.addEventListener("submit", async e => {
+  e.preventDefault(); $("#err").textContent = "";
+  $("#go").disabled = true;
+  try {
+    const r = await fetch("/api/predict", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(Object.fromEntries(new FormData(f)))});
+    const d = await r.json();
+    if (!r.ok) $("#err").textContent = d.error || "Something went wrong."; else show(d);
+  } catch { $("#err").textContent = "Cannot reach the server. Is app.py running?"; }
+  $("#go").disabled = false;
+});
+
+/* ---- dataset ---- */
+const fileIn = $("#file"), drop = $("#drop");
+let DATA = null, page = 0, rowsShown = [];
+const PAGE = 25;
+fileIn.onchange = () => { $("#fname").textContent = fileIn.files[0] ? fileIn.files[0].name : "No file chosen"; };
+["dragover", "dragenter"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => { if (e.dataTransfer.files.length) { fileIn.files = e.dataTransfer.files; fileIn.onchange(); } });
+$("#thr").oninput = () => $("#thrv").textContent = (+$("#thr").value).toFixed(2);
+
+const stat = (label, val) => `<div class="stat"><span>${label}</span><b>${val}</b></div>`;
+const bars = (obj, total, hitCls) => Object.entries(obj).map(([k, v]) =>
+  `<div><div class="t"><span>${esc(k)}${WEAK[k] ? ' <span class="weak">low reliability</span>' : ""}</span><b>${v.toLocaleString()} · ${total ? pct(v / total) : "0%"}</b></div>
+   <div class="bar"><i class="${hitCls}" style="width:${total ? v / total * 100 : 0}%"></i></div></div>`).join("");
+
+$("#az").onclick = async () => {
+  const err = $("#derr"); err.textContent = "";
+  if (!fileIn.files[0]) { err.textContent = "Choose a CSV file first."; return; }
+  const fd = new FormData(); fd.append("file", fileIn.files[0]); fd.append("threshold", $("#thr").value);
+  $("#az").disabled = true; $("#az").textContent = "Analyzing…";
+  try {
+    const r = await fetch("/api/dataset", {method: "POST", body: fd});
+    const d = await r.json();
+    if (!r.ok) { err.textContent = d.error || "Something went wrong."; }
+    else { DATA = d; render(); }
+  } catch { err.textContent = "Cannot reach the server. Is app.py running?"; }
+  $("#az").disabled = false; $("#az").textContent = "Analyze dataset";
+};
+
+function render() {
+  const d = DATA, lab = d.rows[0] && d.rows[0].actual !== undefined;
+  $("#out").hidden = false;
+  $("#sum").innerHTML = stat("Rows analysed", d.n.toLocaleString()) + stat("Predicted failures", d.failures.toLocaleString()) +
+    stat("Failure rate", pct(d.failures / d.n)) + stat("High + Critical risk", (d.risk.High + d.risk.Critical).toLocaleString());
+  $("#riskbars").innerHTML = bars(d.risk, d.n, "");
+  $("#typebars").innerHTML = bars(d.types, d.failures, "hit") + `<p class="mut">Percentages are out of predicted failures. A failure can have two types at once.</p>`;
+  const m = d.metrics; $("#metcard").hidden = !m;
+  if (m) {
+    $("#metstats").innerHTML = stat("Accuracy", pct(m.accuracy, 2)) + stat("Precision", pct(m.precision, 2)) + stat("Recall", pct(m.recall, 2)) + stat("F1-Score", pct(m.f1, 2));
+    $("#cm").innerHTML = `<div></div><div><b style="font-size:13px;color:#9FC3DD">Predicted: no failure</b></div><div><b style="font-size:13px;color:#9FC3DD">Predicted: failure</b></div>
+      <div style="text-align:right;color:#9FC3DD">Real: no failure</div><div class="c g"><b>${m.tn}</b>correct</div><div class="c b"><b>${m.fp}</b>false alarms</div>
+      <div style="text-align:right;color:#9FC3DD">Real: failure</div><div class="c b"><b>${m.fn}</b>missed failures</div><div class="c g"><b>${m.tp}</b>caught</div>`;
+    $("#mettypes").innerHTML = Object.entries(m.types).map(([t, x]) =>
+      `<tr><td>${t}</td><td class="n">${x.support}</td><td class="n">${x.precision.toFixed(3)}</td><td class="n">${x.recall.toFixed(3)}</td><td class="n">${x.f1.toFixed(3)}</td></tr>`).join("") || `<tr><td colspan="5">No TWF/HDF/PWF/OSF columns in the file.</td></tr>`;
+  }
+  $("#flt").innerHTML = `<option value="all">All rows</option><option value="fail">Predicted failures</option>` +
+    ["Critical", "High", "Medium", "Low"].map(k => `<option value="${k}">${k} risk</option>`).join("") + (lab ? `<option value="wrong">Wrong predictions</option>` : "");
+  page = 0; table();
+}
+const FILT = {all: () => true, fail: r => r.fail, wrong: r => (r.actual === 1) !== r.fail};
+["Critical", "High", "Medium", "Low"].forEach(k => FILT[k] = r => r.risk === k);
+
+function table() {
+  const lab = DATA.rows[0] && DATA.rows[0].actual !== undefined;
+  rowsShown = DATA.rows.filter(FILT[$("#flt").value]);
+  const pages = Math.max(1, Math.ceil(rowsShown.length / PAGE)); page = Math.min(page, pages - 1);
+  const sl = rowsShown.slice(page * PAGE, page * PAGE + PAGE);
+  $("#tbl").innerHTML = `<thead><tr><th>ID</th><th>Type</th><th class="n">Air [K]</th><th class="n">Process [K]</th><th class="n">RPM</th><th class="n">Torque</th><th class="n">Wear</th>
+    <th class="n">Probability</th><th>Risk</th><th>Failure</th><th>Failure type</th><th>Action</th>${lab ? "<th>Real</th>" : ""}</tr></thead><tbody>` +
+    sl.map(r => `<tr class="${lab && (r.actual === 1) !== r.fail ? "wrong" : ""}"><td>${esc(r.id)}</td><td>${esc(r.type)}</td><td class="n">${r.air}</td><td class="n">${r.proc}</td>
+      <td class="n">${r.rpm}</td><td class="n">${r.torque}</td><td class="n">${r.wear}</td><td class="n">${pct(r.prob)}</td>
+      <td><span class="badge ${r.risk}">${r.risk}</span></td><td>${r.fail ? "Yes" : "No"}</td><td>${esc(r.types.join(" + ") || "—")}</td><td>${esc(r.action || "—")}</td>
+      ${lab ? `<td>${r.actual ? "Failure" : "No failure"}</td>` : ""}</tr>`).join("") + "</tbody>";
+  $("#pinfo").textContent = rowsShown.length ? `Rows ${page * PAGE + 1}–${page * PAGE + sl.length} of ${rowsShown.length.toLocaleString()}` : "No rows match this filter";
+  $("#prev").disabled = page === 0; $("#next").disabled = page >= pages - 1;
+}
+$("#flt").onchange = () => { page = 0; table(); };
+$("#prev").onclick = () => { page--; table(); }; $("#next").onclick = () => { page++; table(); };
+
+$("#dl").onclick = () => {
+  const lab = DATA.rows[0] && DATA.rows[0].actual !== undefined, q = v => `"${String(v).replace(/"/g, '""')}"`;
+  const head = ["id", "Type", "Air temperature [K]", "Process temperature [K]", "Rotational speed [rpm]", "Torque [Nm]", "Tool wear [min]",
+    "Failure_Probability", "Predicted_Failure", "Risk_Level", "Predicted_Types", "Recommended_Action", "P_TWF", "P_HDF", "P_PWF", "P_OSF"].concat(lab ? ["Machine failure"] : []);
+  const lines = DATA.rows.map(r => [r.id, r.type, r.air, r.proc, r.rpm, r.torque, r.wear, r.prob, r.fail ? 1 : 0, r.risk, r.types.join("+"), r.action,
+    r.ptype.TWF, r.ptype.HDF, r.ptype.PWF, r.ptype.OSF].concat(lab ? [r.actual] : []).map(q).join(","));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([head.map(q).join(",") + "\n" + lines.join("\n")], {type: "text/csv"}));
+  a.download = "makina_sense_predictions.csv"; a.click(); URL.revokeObjectURL(a.href);
+};
+</script>
+</body>
+</html>
