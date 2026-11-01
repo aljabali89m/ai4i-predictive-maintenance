@@ -8,15 +8,15 @@
 <style>
 *{box-sizing:border-box}[hidden]{display:none!important}
 body{margin:0;font-family:Inter,system-ui,sans-serif;background-color:#071626;background-image:url('/static/hero_machine.jpg');background-size:cover;background-position:center center;background-attachment:fixed;color:#E6F1FA;min-height:100vh}
-body::before{content:'';position:fixed;inset:0;background:linear-gradient(135deg,rgba(4,12,28,0.92) 0%,rgba(7,22,50,0.88) 40%,rgba(10,28,60,0.82) 70%,rgba(4,12,28,0.93) 100%);z-index:0;pointer-events:none}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(135deg,rgba(4,12,28,0.58) 0%,rgba(7,22,50,0.52) 40%,rgba(10,28,60,0.48) 70%,rgba(4,12,28,0.60) 100%);z-index:0;pointer-events:none}
 .app{position:relative;z-index:1}
 a{text-decoration:none}svg{flex:none}
 .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
-aside{background:rgba(8,26,44,0.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-right:1px solid rgba(26,58,88,0.7);padding:28px 14px;display:flex;flex-direction:column;gap:28px;position:sticky;top:0;height:100vh}
+aside{border-right:1px solid rgba(56,208,245,0.18);padding:28px 14px;display:flex;flex-direction:column;gap:28px;position:sticky;top:0;height:100vh}
 .brand{text-align:center}.brand .n{font-size:26px;font-weight:700;color:#fff}.brand .n span,h1 span{color:#38D0F5}.brand small{font-size:12px;color:#9FB6C8}
 .nav{display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:10px;color:#C5D6E4;font-size:15px;font-weight:500;margin-bottom:6px}
 .nav:hover{background:#12304D}.nav.on{background:#14406A;color:#fff;border:1px solid #2A6FA8}
-header.top{padding:18px 40px;border-bottom:1px solid rgba(26,58,88,0.7);font-size:20px;font-weight:600;color:#fff;background:rgba(8,22,44,0.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+header.top{padding:18px 40px;border-bottom:1px solid rgba(26,58,88,0.7);font-size:20px;font-weight:600;color:#fff;background:rgba(8,22,44,0.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .hero{padding:36px 40px 0}h1{margin:0;font-size:52px;font-weight:700;color:#fff}
 .hero .sub{font-size:21px;margin-top:6px;color:#fff}.hero p{margin:14px 0 0;max-width:640px;font-size:16px;line-height:1.5;color:#C5D6E4}
 .pg{padding:24px 40px 40px;display:flex;flex-direction:column;gap:24px}
@@ -106,11 +106,11 @@ aside{
   flex-direction:column;
   gap:20px;
   height:100vh;
-  background:linear-gradient(180deg, rgba(8,24,42,0.94) 0%, rgba(5,17,31,0.97) 100%);
-  border-right:1px solid rgba(56,208,245,0.14);
-  box-shadow:inset -1px 0 0 rgba(255,255,255,0.03), 8px 0 24px rgba(0,0,0,0.25);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
+  background:rgba(4,14,28,0.15);
+  border-right:1px solid rgba(56,208,245,0.18);
+  box-shadow:4px 0 24px rgba(0,0,0,0.25);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
   position:relative;
   z-index:10;
   transition:width .3s cubic-bezier(.4,0,.2,1), padding .3s cubic-bezier(.4,0,.2,1), opacity .25s ease, border-color .3s ease;
@@ -195,7 +195,6 @@ aside{
 }
 .brand .n{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px}
 .brand .n span{color:#38D0F5;text-shadow:0 0 12px rgba(56,208,245,0.4)}
-.brand small{font-size:11px;color:#7EA2BE;letter-spacing:0.3px}
 
 nav{display:flex;flex-direction:column;gap:6px}
 .nav{
@@ -204,9 +203,10 @@ nav{display:flex;flex-direction:column;gap:6px}
   gap:12px;
   padding:10px 14px;
   border-radius:10px;
-  color:#9FB6C8;
-  font-size:13.5px;
-  font-weight:500;
+  color:#FFFFFF;
+  font-size:14px;
+  font-weight:600;
+  text-shadow:0 2px 8px rgba(0,0,0,0.8);
   transition:all .2s cubic-bezier(.4,0,.2,1);
   position:relative;
   overflow:hidden;
@@ -215,7 +215,7 @@ nav{display:flex;flex-direction:column;gap:6px}
 .nav svg{
   width:18px;
   height:18px;
-  stroke:currentColor;
+  stroke:#38D0F5;
   transition:transform .2s ease, stroke .2s ease;
 }
 .nav:hover{
@@ -255,8 +255,10 @@ nav{display:flex;flex-direction:column;gap:6px}
   margin-top:auto;
   padding:12px 14px;
   border-radius:10px;
-  background:rgba(10,30,52,0.6);
-  border:1px solid rgba(42,111,168,0.25);
+  background:rgba(10,30,52,0.42);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  border:1px solid rgba(56,208,245,0.22);
   display:flex;
   align-items:center;
   gap:10px;
@@ -286,8 +288,12 @@ nav{display:flex;flex-direction:column;gap:6px}
 .status-text b{color:#E6F1FA;font-size:12px;font-weight:600}
 
 header.top{padding:10px 24px;font-size:15px}
-.hero{padding:18px 24px 0}h1{font-size:34px}
-.hero .sub{font-size:16px}.hero p{font-size:13.5px;margin-top:8px}
+.breadcrumb{color:#FFFFFF;text-shadow:0 1px 6px rgba(0,0,0,0.7)}
+.hero{padding:24px 24px 0;display:flex;flex-direction:column;align-items:center;text-align:center}
+h1{font-size:36px;color:#FFFFFF;text-shadow:0 2px 14px rgba(0,0,0,0.85)}
+.hero .sub{font-size:17px;color:#FFFFFF;font-weight:600;text-shadow:0 2px 12px rgba(0,0,0,0.9);margin-top:8px}
+.hero p{font-size:14.5px;color:#FFFFFF;line-height:1.6;margin-top:10px;max-width:660px;text-shadow:0 2px 12px rgba(0,0,0,0.9)}
+.hero .cta-wrap{margin-top:20px;display:flex;justify-content:center;width:100%}
 .pg{padding:16px 24px 24px;gap:16px}
 .pt{padding:16px 24px 0;font-size:22px}
 .row{gap:16px}.r2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
@@ -326,7 +332,6 @@ table{font-size:12.5px}th,td{padding:7px 10px}
     </div>
     <div>
       <div class="n">Makina <span>Sense</span></div>
-      <small>AI4I Predictive Maintenance</small>
     </div>
   </div>
   <nav>
@@ -371,15 +376,15 @@ table{font-size:12.5px}th,td{padding:7px 10px}
 <h1>Makina <span>Sense</span></h1>
 <div class="sub">AI-Powered Predictive Maintenance for Industrial Machines</div>
 <p>Predict machine failures early, reduce downtime, and optimize maintenance using machine learning.</p>
-<p style="margin-top:18px"><a class="btn" href="#dataset" id="dash-cta">Analyze a dataset ›</a></p>
+<div class="cta-wrap"><a class="btn" href="#dataset" id="dash-cta">Analyze a dataset ›</a></div>
 </section>
 
 <!-- Empty state (shown when no data yet) -->
 <div id="dash-empty" class="pg">
-  <div style="text-align:center;padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:16px">
-    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#38D0F5" stroke-width="1.3" opacity="0.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>
-    <b style="font-size:20px;color:#fff">No data analyzed yet</b>
-    <span style="color:#9FB6C8;font-size:14px;max-width:400px">Upload a CSV dataset from the <a href="#dataset" style="color:#38D0F5">Dataset Analysis</a> tab to see your machine health overview here.</span>
+  <div style="text-align:center;padding:36px 20px;display:flex;flex-direction:column;align-items:center;gap:14px">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#38D0F5" stroke-width="1.4" opacity="0.9" style="filter:drop-shadow(0 2px 8px rgba(0,0,0,0.7))"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>
+    <b style="font-size:20px;color:#FFFFFF;text-shadow:0 2px 14px rgba(0,0,0,0.95)">No data analyzed yet</b>
+    <span style="color:#FFFFFF;font-size:14.5px;max-width:440px;text-shadow:0 2px 12px rgba(0,0,0,0.95);line-height:1.5">Upload a CSV dataset from the <a href="#dataset" style="color:#38D0F5;font-weight:600;text-decoration:underline">Dataset Analysis</a> tab to see your machine health overview here.</span>
   </div>
 </div>
 
