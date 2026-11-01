@@ -44,7 +44,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .big{font-size:52px;font-weight:700;line-height:1.1;color:#fff}
 .badge{display:inline-block;font-weight:700;font-size:13px;padding:5px 12px;border-radius:999px;white-space:nowrap}
 .Low{background:#DCFCE7;color:#14532D}.Medium{background:#FEF9C3;color:#713F12}.High{background:#FFEDD5;color:#7C2D12}.Critical{background:#FEE2E2;color:#7F1D1D}
-.bar{height:10px;border-radius:5px;background:#1B3A58;overflow:hidden}.bar i{display:block;height:100%;background:#38A8E0}.bar i.hit{background:#F59E0B}
+.bar{height:10px;border-radius:5px;background:#1B3A58;overflow:hidden}.bar i{display:block;height:100%;background:#38A8E0;transition:width .6s ease}.bar i.hit{background:#F59E0B}
 .t{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;gap:10px}
 .act{background:#0F3A4A;border:1px solid #1E6F8A;border-radius:10px;padding:12px 14px;font-size:14px}.act b{display:block;color:#fff}
 .warn{background:#3A2E0F;border:1px solid #8A6A1E;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;color:#FDE7B0}
@@ -59,6 +59,31 @@ tr.wrong td{background:#3A1620}
 .cm div.c{border-radius:8px;padding:12px 8px;background:#12304D}.cm .g{background:#0F3F3A}.cm .b{background:#4A1D2A}.cm b{display:block;font-size:22px;color:#fff}
 .pager{display:flex;align-items:center;gap:12px;font-size:13px;color:#C5D6E4;flex-wrap:wrap}
 @media(max-width:900px){.app{grid-template-columns:1fr}aside{position:static;height:auto}.r1{grid-template-columns:1fr}.grid{grid-template-columns:1fr}h1{font-size:38px}header.top,.hero,.pg,.pt{padding-left:20px;padding-right:20px}}
+/* ---- toast ---- */
+#toast-wrap{position:fixed;top:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{padding:13px 18px;border-radius:12px;font-size:13.5px;font-weight:600;color:#fff;backdrop-filter:blur(12px);border:1px solid;box-shadow:0 8px 32px rgba(0,0,0,.4);opacity:0;transform:translateX(60px);transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:auto;max-width:320px}
+.toast.show{opacity:1;transform:translateX(0)}
+.toast.critical{background:rgba(127,29,29,.88);border-color:#EF4444}
+.toast.high{background:rgba(124,45,18,.88);border-color:#F97316}
+.toast.ok{background:rgba(15,63,58,.88);border-color:#22C55E}
+/* ---- loading overlay ---- */
+#loading-overlay{position:fixed;inset:0;z-index:8888;background:rgba(4,12,28,.75);backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#fff;font-size:16px;font-weight:600}
+.spinner{width:52px;height:52px;border:4px solid rgba(56,208,245,.2);border-top-color:#38D0F5;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ---- gauge ---- */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0}
+.gauge-label{font-size:22px;font-weight:700;color:#fff}
+.gauge-sub{font-size:12px;color:#9FB6C8}
+/* ---- presets ---- */
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.preset{height:30px;padding:0 12px;font-size:12px;border-radius:8px;background:#0C2239;border:1px solid #2F5F8C;color:#C5D6E4;cursor:pointer;transition:border-color .2s,background .2s}
+.preset:hover{border-color:#38D0F5;background:#0E2A45;color:#fff}
+/* ---- breadcrumb in header ---- */
+.breadcrumb{font-size:13px;color:#9FB6C8;display:flex;align-items:center;gap:6px}
+.breadcrumb span{color:#38D0F5;font-weight:600}
+/* ---- tooltip ---- */
+.fld{position:relative}
+.tip{font-size:11px;color:#6B8FA8;font-weight:400;margin-top:2px}
 
 /* ---- compact layout: fits the window, only the main panel scrolls ---- */
 html,body{height:100%;overflow:hidden}
@@ -109,7 +134,9 @@ table{font-size:12.5px}th,td{padding:7px 10px}
 </aside>
 
 <div>
-<header class="top"></header>
+<header class="top"><div class="breadcrumb">Makina Sense &rsaquo; <span id="bread-page">Dashboard</span></div></header>
+<div id="toast-wrap"></div>
+<div id="loading-overlay" hidden><div class="spinner"></div><span id="loading-msg">Analyzing dataset…</span></div>
 
 <!-- ============ DASHBOARD ============ -->
 <div data-view="dashboard">
@@ -222,16 +249,44 @@ table{font-size:12.5px}th,td{padding:7px 10px}
 <section class="card">
 <div class="ch"><div><h2>Predict Machine Failure</h2><p>Enter the operating parameters of one machine.</p></div></div>
 <form id="f" class="bd" novalidate>
+<!-- Quick-fill presets -->
+<div>
+  <div style="font-size:12px;color:#9FB6C8;margin-bottom:6px;font-weight:500">⚡ Quick Fill Scenarios</div>
+  <div class="presets">
+    <button type="button" class="preset" onclick="fillPreset('normal')">✅ Normal Operation</button>
+    <button type="button" class="preset" onclick="fillPreset('stress')">⚠️ High Stress</button>
+    <button type="button" class="preset" onclick="fillPreset('critical')">🔴 Critical Load</button>
+    <button type="button" class="preset" onclick="fillPreset('worn')">🔧 Worn Tool</button>
+  </div>
+</div>
 <div class="grid">
-<label class="fld">Machine Type<select name="machine_type"><option value="L">L (Low)</option><option value="M">M (Medium)</option><option value="H">H (High)</option></select></label>
-<label class="fld">Process Temperature [K]<input name="proc" type="number" step="any" placeholder="e.g., 310.0"></label>
-<label class="fld">Air Temperature [K]<input name="air" type="number" step="any" placeholder="e.g., 300.0"></label>
-<label class="fld">Torque [Nm]<input name="torque" type="number" step="any" placeholder="e.g., 40.0"></label>
-<label class="fld">Rotational Speed [rpm]<input name="rpm" type="number" step="any" placeholder="e.g., 1500"></label>
-<label class="fld">Tool Wear [min]<input name="wear" type="number" step="any" placeholder="e.g., 0"></label>
+<label class="fld">Machine Type
+  <select name="machine_type"><option value="L">L (Low)</option><option value="M">M (Medium)</option><option value="H">H (High)</option></select>
+  <span class="tip">Machine quality tier: L=Low, M=Medium, H=High</span>
+</label>
+<label class="fld">Process Temperature [K]
+  <input name="proc" type="number" step="any" placeholder="e.g., 310.0">
+  <span class="tip">Typical range: 305–315 K</span>
+</label>
+<label class="fld">Air Temperature [K]
+  <input name="air" type="number" step="any" placeholder="e.g., 300.0">
+  <span class="tip">Typical range: 295–305 K</span>
+</label>
+<label class="fld">Torque [Nm]
+  <input name="torque" type="number" step="any" placeholder="e.g., 40.0">
+  <span class="tip">Typical range: 20–70 Nm</span>
+</label>
+<label class="fld">Rotational Speed [rpm]
+  <input name="rpm" type="number" step="any" placeholder="e.g., 1500">
+  <span class="tip">Typical range: 1200–2000 rpm</span>
+</label>
+<label class="fld">Tool Wear [min]
+  <input name="wear" type="number" step="any" placeholder="e.g., 0">
+  <span class="tip">Accumulated wear in minutes (0–250 normal)</span>
+</label>
 </div>
 <p class="err" id="err" role="alert"></p>
-<button id="go" type="submit">Predict</button>
+<button id="go" type="submit">▶ Predict</button>
 </form>
 </section>
 <section class="card">
@@ -250,23 +305,39 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">"
 const pct = (v, d = 1) => (v * 100).toFixed(d) + "%";
 const WEAK = {TWF: "unreliable"};
 
-/* ---- routing ---- */
+/* ---- routing + breadcrumb ---- */
+const PAGE_NAMES = {dashboard:'Dashboard', dataset:'Dataset Analysis', predict:'Single Machine'};
 const views = [...document.querySelectorAll("[data-view]")], links = [...document.querySelectorAll("nav a")];
 function route() {
   let v = (location.hash || "#dashboard").slice(1);
   if (!views.some(x => x.dataset.view === v)) v = "dashboard";
   views.forEach(x => x.hidden = x.dataset.view !== v);
   links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + v));
+  const bp = $("#bread-page"); if (bp) bp.textContent = PAGE_NAMES[v] || v;
 }
 addEventListener("hashchange", route); route();
 
 /* ---- shared state ---- */
 const fileIn = $("#file"), drop = $("#drop");
-let DATA = null, SINGLE_HISTORY = [], page = 0, rowsShown = [];
+let DATA = null, page = 0, rowsShown = [];
 const PAGE = 25;
 
+/* ---- localStorage for single history ---- */
+function saveSingleHistory() {
+  try { localStorage.setItem('makina_single_history', JSON.stringify(SINGLE_HISTORY)); } catch(e){}
+}
+function loadSingleHistory() {
+  try {
+    const s = localStorage.getItem('makina_single_history');
+    if (s) { SINGLE_HISTORY = JSON.parse(s); if (SINGLE_HISTORY.length) renderDashboardSingle(); }
+  } catch(e){ SINGLE_HISTORY = []; }
+}
+let SINGLE_HISTORY = [];
+loadSingleHistory();
+
 /* ---- helpers (defined early so dashboard can use them) ---- */
-const stat = (label, val) => `<div class="stat"><span>${label}</span><b>${val}</b></div>`;
+const stat = (label, val, dataVal='', dataSuf='') =>
+  `<div class="stat"><span>${label}</span><b ${dataVal ? `data-val="${dataVal}" data-suf="${dataSuf}"` : ''}>${val}</b></div>`;
 const bars = (obj, total, hitCls) => Object.entries(obj).map(([k, v]) =>
   `<div><div class="t"><span>${esc(k)}${WEAK[k] ? ' <span class="weak">low reliability</span>' : ""}</span><b>${v.toLocaleString()} · ${total ? pct(v / total) : "0%"}</b></div>
    <div class="bar"><i class="${hitCls}" style="width:${total ? v / total * 100 : 0}%"></i></div></div>`).join("");
@@ -323,6 +394,8 @@ function renderDashboard() {
   }
 
   // Top 10 highest-risk machines
+  const topTitle = $("#dash-topcard .ch h2");
+  if (topTitle) topTitle.textContent = "Top 10 Highest-Risk Machines";
   const top10 = [...d.rows].sort((a, b) => b.prob - a.prob).slice(0, 10);
   $("#dash-toptbl").innerHTML = `<thead><tr><th>ID</th><th>Type</th><th class="n">Failure Prob.</th><th>Risk</th><th>Failure Type</th><th>Action</th></tr></thead><tbody>` +
     top10.map(r => `<tr><td>${esc(r.id)}</td><td>${esc(r.type)}</td><td class="n"><b style="color:#38D0F5">${pct(r.prob)}</b></td>
@@ -350,14 +423,14 @@ function renderDashboardSingle() {
 
   $("#dash-empty").hidden = true;
   $("#dash-data").hidden = false;
-  $("#dash-source-badge").textContent = `⚡ Single Machine · ${h.length} test${h.length > 1 ? 's' : ''}`;
+  $("#dash-source-badge").textContent = `⚡ Single Machine · ${h.length} record${h.length > 1 ? 's' : ''}`;
   $("#dash-clear").style.display = "";
-  $("#dash-title").textContent = "Single Machine Testing Overview";
-  $("#dash-subtitle").textContent = `${h.length} machine${h.length > 1 ? 's' : ''} tested — results accumulate with each prediction`;
+  $("#dash-title").textContent = "Single Machine Overview";
+  $("#dash-subtitle").textContent = `${h.length} machine${h.length > 1 ? 's' : ''} evaluated — results accumulate with each prediction`;
 
   const kpiColor = v => v >= 0.3 ? "#FCA5A5" : v >= 0.1 ? "#FDE7B0" : "#86EFAC";
   $("#dash-kpis").innerHTML =
-    stat("Machines Tested", h.length.toLocaleString()) +
+    stat("Machines Evaluated", h.length.toLocaleString()) +
     stat("Predicted Failures", `<span style="color:${kpiColor(failRate)}">${failures}</span>`) +
     stat("Failure Rate", `<span style="color:${kpiColor(failRate)}">${pct(failRate)}</span>`) +
     stat("High & Critical Risk", `<span style="color:${highRisk > 0 ? '#FCA5A5' : '#86EFAC'}">${highRisk}</span>`);
@@ -371,10 +444,12 @@ function renderDashboardSingle() {
 
   $("#dash-metcard").hidden = true;
 
-  // All tests table, sorted by prob descending
-  const sorted = [...h].map((r, i) => ({idx: i+1, ...r})).sort((a, b) => b.failure_probability - a.failure_probability).slice(0, 10);
-  $("#dash-toptbl").innerHTML = `<thead><tr><th>#</th><th>Type</th><th class="n">Air [K]</th><th class="n">RPM</th><th class="n">Torque</th><th class="n">Prob.</th><th>Risk</th><th>Failure Type</th></tr></thead><tbody>` +
-    sorted.map(r => `<tr><td>Test ${r.idx}</td><td>${esc(r._input.machine_type || '?')}</td>
+  // All records table, sorted by ID ascending
+  const topTitle = $("#dash-topcard .ch h2");
+  if (topTitle) topTitle.textContent = "Machines List (Sorted by ID)";
+  const sorted = [...h].map((r, i) => ({idx: i, ...r})).sort((a, b) => a.idx - b.idx);
+  $("#dash-toptbl").innerHTML = `<thead><tr><th>ID</th><th>Type</th><th class="n">Air [K]</th><th class="n">RPM</th><th class="n">Torque</th><th class="n">Prob.</th><th>Risk</th><th>Failure Type</th></tr></thead><tbody>` +
+    sorted.map(r => `<tr><td>${r.idx}</td><td>${esc(r._input.machine_type || '?')}</td>
       <td class="n">${r._input.air || '—'}</td><td class="n">${r._input.rpm || '—'}</td><td class="n">${r._input.torque || '—'}</td>
       <td class="n"><b style="color:#38D0F5">${pct(r.failure_probability)}</b></td>
       <td><span class="badge ${r.risk_level}">${r.risk_level}</span></td>
@@ -388,12 +463,75 @@ function clearSingleHistory() {
   $("#dash-clear").style.display = "none";
 }
 
+/* ---- quick-fill presets ---- */
+const PRESETS = {
+  normal:   {machine_type:'M', air:300.1, proc:310.5, rpm:1551, torque:40.1, wear:15},
+  stress:   {machine_type:'M', air:304.0, proc:316.0, rpm:1200, torque:68.0, wear:180},
+  critical: {machine_type:'H', air:308.0, proc:319.5, rpm:1050, torque:76.0, wear:220},
+  worn:     {machine_type:'L', air:301.0, proc:312.0, rpm:1450, torque:55.0, wear:245}
+};
+function fillPreset(key) {
+  const p = PRESETS[key]; if (!p) return;
+  f.machine_type.value = p.machine_type;
+  f.air.value = p.air; f.proc.value = p.proc;
+  f.rpm.value = p.rpm; f.torque.value = p.torque;
+  f.wear.value = p.wear;
+}
+
+/* ---- gauge SVG helper ---- */
+function gaugeHTML(prob) {
+  const pct100 = Math.round(prob * 100);
+  const r = 52, cx = 64, cy = 64;
+  const circ = 2 * Math.PI * r;
+  const fill = circ * (1 - prob) * 0.75; // 270deg arc
+  const color = prob >= 0.7 ? '#EF4444' : prob >= 0.4 ? '#F97316' : prob >= 0.2 ? '#EAB308' : '#22C55E';
+  const dashArr = circ * 0.75;
+  const dashOff = circ * 0.75 * (1 - prob);
+  return `<div class="gauge-wrap">
+    <svg width="128" height="88" viewBox="0 0 128 88">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1B3A58" stroke-width="10" stroke-dasharray="${dashArr.toFixed(1)} ${(circ * 0.25).toFixed(1)}" stroke-dashoffset="${(circ * 0.125).toFixed(1)}" stroke-linecap="round" transform="rotate(135 ${cx} ${cy})"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="10" stroke-dasharray="${dashArr.toFixed(1)} ${(circ * 0.25).toFixed(1)}" stroke-dashoffset="${(circ * 0.125 + dashOff).toFixed(1)}" stroke-linecap="round" transform="rotate(135 ${cx} ${cy})" style="transition:stroke-dashoffset .8s ease"/>
+      <text x="${cx}" y="${cy - 2}" text-anchor="middle" fill="${color}" font-size="22" font-weight="700" font-family="Inter,sans-serif">${pct100}%</text>
+      <text x="${cx}" y="${cy + 16}" text-anchor="middle" fill="#9FB6C8" font-size="10" font-family="Inter,sans-serif">FAILURE PROB.</text>
+    </svg>
+  </div>`;
+}
+
+/* ---- toast ---- */
+function toast(msg, type='ok', dur=4500) {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  $('#toast-wrap').appendChild(el);
+  requestAnimationFrame(() => { requestAnimationFrame(() => el.classList.add('show')); });
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 400); }, dur);
+}
+
+/* ---- animated counter ---- */
+function animCount(el, target, isFloat=false, suffix='') {
+  const start = 0, dur = 800, step = 16;
+  let cur = start, steps = dur / step;
+  const inc = (target - start) / steps;
+  const t = setInterval(() => {
+    cur = Math.min(cur + inc, target);
+    el.innerHTML = (isFloat ? cur.toFixed(1) : Math.round(cur)).toLocaleString() + suffix;
+    if (cur >= target) clearInterval(t);
+  }, step);
+}
+function animateStats(container) {
+  container.querySelectorAll('b[data-val]').forEach(b => {
+    const v = parseFloat(b.dataset.val), isF = b.dataset.val.includes('.');
+    animCount(b, v, isF, b.dataset.suf || '');
+  });
+}
+
 /* ---- single machine ---- */
 const f = $("#f"), res = $("#res");
 function show(r, formData) {
-  let h = `<div class="big">${pct(r.failure_probability)}</div>
-    <div><span class="badge ${esc(r.risk_level)}">${esc(r.risk_level)} risk</span></div>
-    <div>${r.failure ? "Failure predicted." : "No failure predicted."}</div>`;
+  const prob = r.failure_probability;
+  let h = gaugeHTML(prob);
+  h += `<div><span class="badge ${esc(r.risk_level)}">${esc(r.risk_level)} risk</span></div>
+    <div style="font-size:14px;color:${r.failure ? '#FCA5A5' : '#86EFAC'}">${r.failure ? '🔴 Failure predicted.' : '✅ No failure predicted.'}</div>`;
   if (r.failure) {
     h += Object.entries(r.type_probabilities).map(([t, p]) =>
       `<div><div class="t"><span>${t} · ${esc(r.type_names[t])} ${WEAK[t] ? '<span class="weak">low reliability</span>' : ""}</span><b>${pct(p)}</b></div>
@@ -401,8 +539,13 @@ function show(r, formData) {
     h += r.predicted_types.map((t, i) => `<div class="act"><b>${esc(r.type_names[t])}</b>${esc(r.actions[i])}</div>`).join("");
   }
   res.innerHTML = h;
+  // Toast alert
+  if (r.risk_level === 'Critical') toast('🔴 CRITICAL risk detected! Immediate action required.', 'critical', 7000);
+  else if (r.risk_level === 'High') toast('⚠️ High risk detected — schedule maintenance soon.', 'high', 5000);
+  else if (!r.failure) toast('✅ Machine is operating normally.', 'ok', 3000);
   // Add to single history and update dashboard
   SINGLE_HISTORY.push({...r, _input: formData || {}});
+  saveSingleHistory();
   renderDashboardSingle();
 }
 f.addEventListener("submit", async e => {
@@ -430,12 +573,19 @@ $("#az").onclick = async () => {
   if (!fileIn.files[0]) { err.textContent = "Choose a CSV file first."; return; }
   const fd = new FormData(); fd.append("file", fileIn.files[0]); fd.append("threshold", $("#thr").value);
   $("#az").disabled = true; $("#az").textContent = "Analyzing…";
+  $("#loading-overlay").hidden = false;
+  $("#loading-msg").textContent = `Analyzing ${fileIn.files[0].name}…`;
   try {
     const r = await fetch("/api/dataset", {method: "POST", body: fd});
     const d = await r.json();
     if (!r.ok) { err.textContent = d.error || "Something went wrong."; }
-    else { DATA = d; render(); renderDashboard(); }
+    else {
+      DATA = d; render(); renderDashboard();
+      toast(`✅ Dataset analyzed: ${d.n.toLocaleString()} rows, ${d.failures} failure${d.failures !== 1 ? 's' : ''} detected.`, 'ok', 5000);
+      if (d.risk && (d.risk.Critical || 0) > 0) toast(`🔴 ${d.risk.Critical} Critical risk machine${d.risk.Critical > 1 ? 's' : ''} found!`, 'critical', 7000);
+    }
   } catch { err.textContent = "Cannot reach the server. Is app.py running?"; }
+  $("#loading-overlay").hidden = true;
   $("#az").disabled = false; $("#az").textContent = "Analyze dataset";
 };
 
