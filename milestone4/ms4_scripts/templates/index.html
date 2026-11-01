@@ -106,14 +106,60 @@ aside{
   flex-direction:column;
   gap:20px;
   height:100vh;
-  background:rgba(4,14,28,0.15);
+  background-color:rgba(4,14,28,0.22);
+  background-image:radial-gradient(rgba(56,208,245,0.08) 1px, transparent 1px);
+  background-size:18px 18px;
   border-right:1px solid rgba(56,208,245,0.18);
-  box-shadow:4px 0 24px rgba(0,0,0,0.25);
-  backdrop-filter:blur(4px);
-  -webkit-backdrop-filter:blur(4px);
+  box-shadow:4px 0 28px rgba(0,0,0,0.35);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
   position:relative;
   z-index:10;
   transition:width .3s cubic-bezier(.4,0,.2,1), padding .3s cubic-bezier(.4,0,.2,1), opacity .25s ease, border-color .3s ease;
+}
+/* Moving ambient cyber light orb */
+aside::before{
+  content:'';
+  position:absolute;
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(56,208,245,0.22) 0%, rgba(14,165,233,0.08) 50%, transparent 70%);
+  top:10%;
+  left:10px;
+  filter:blur(32px);
+  pointer-events:none;
+  z-index:0;
+  animation:ambientDrift 8s ease-in-out infinite alternate;
+}
+@keyframes ambientDrift{
+  0%{ transform:translateY(0) scale(1); opacity:0.55; }
+  50%{ transform:translateY(180px) scale(1.2); opacity:0.85; background:radial-gradient(circle, rgba(14,165,233,0.25) 0%, rgba(56,208,245,0.1) 50%, transparent 70%); }
+  100%{ transform:translateY(360px) scale(0.95); opacity:0.55; }
+}
+/* Laser energy line traveling down the sidebar border */
+aside::after{
+  content:'';
+  position:absolute;
+  top:-25%;
+  right:0;
+  width:2px;
+  height:40%;
+  background:linear-gradient(180deg, transparent, rgba(56,208,245,0.9), #38D0F5, rgba(56,208,245,0.9), transparent);
+  box-shadow:0 0 10px #38D0F5, 0 0 4px #fff;
+  pointer-events:none;
+  z-index:15;
+  animation:laserEdge 5s infinite cubic-bezier(.4,0,.2,1);
+}
+@keyframes laserEdge{
+  0%{ transform:translateY(-100%); opacity:0; }
+  15%{ opacity:1; }
+  85%{ opacity:1; }
+  100%{ transform:translateY(400%); opacity:0; }
+}
+.brand, nav, .sidebar-status{
+  position:relative;
+  z-index:2;
 }
 .app.collapsed aside{
   width:0;
@@ -181,17 +227,22 @@ aside{
   width:46px;
   height:46px;
   border-radius:12px;
-  background:linear-gradient(135deg, rgba(56,208,245,0.18), rgba(14,165,233,0.06));
+  background:linear-gradient(135deg, rgba(56,208,245,0.22), rgba(14,165,233,0.08));
   border:1px solid rgba(56,208,245,0.35);
   display:flex;
   align-items:center;
   justify-content:center;
   box-shadow:0 0 18px rgba(56,208,245,0.2);
   transition:transform .3s ease, box-shadow .3s ease;
+  animation:logoBreathe 4s ease-in-out infinite;
+}
+@keyframes logoBreathe{
+  0%, 100%{ box-shadow:0 0 16px rgba(56,208,245,0.2); border-color:rgba(56,208,245,0.35); }
+  50%{ box-shadow:0 0 28px rgba(56,208,245,0.45); border-color:#38D0F5; }
 }
 .brand:hover .brand-icon{
   transform:scale(1.05) rotate(4deg);
-  box-shadow:0 0 24px rgba(56,208,245,0.35);
+  box-shadow:0 0 32px rgba(56,208,245,0.55);
 }
 .brand .n{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px}
 .brand .n span{color:#38D0F5;text-shadow:0 0 12px rgba(56,208,245,0.4)}
@@ -229,11 +280,16 @@ nav{display:flex;flex-direction:column;gap:6px}
   transform:scale(1.1);
 }
 .nav.on{
-  background:linear-gradient(90deg, rgba(20,64,106,0.75), rgba(12,38,64,0.55));
+  background:linear-gradient(90deg, rgba(20,64,106,0.85), rgba(12,38,64,0.65));
   color:#fff;
   font-weight:600;
-  border:1px solid rgba(56,208,245,0.4);
-  box-shadow:0 4px 14px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+  border:1px solid rgba(56,208,245,0.45);
+  box-shadow:0 4px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  animation:navGlow 3.5s ease-in-out infinite alternate;
+}
+@keyframes navGlow{
+  0%{ box-shadow:0 4px 18px rgba(0,0,0,0.35), 0 0 10px rgba(56,208,245,0.15); }
+  100%{ box-shadow:0 4px 18px rgba(0,0,0,0.35), 0 0 22px rgba(56,208,245,0.35); }
 }
 .nav.on::before{
   content:'';
