@@ -7,20 +7,22 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
 *{box-sizing:border-box}[hidden]{display:none!important}
-body{margin:0;font-family:Inter,system-ui,sans-serif;background:radial-gradient(1200px 600px at 80% -10%,#10375C,#071626 60%) fixed;color:#E6F1FA;min-height:100vh}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background-color:#071626;background-image:url('/static/hero_machine.jpg');background-size:cover;background-position:center center;background-attachment:fixed;color:#E6F1FA;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(135deg,rgba(4,12,28,0.92) 0%,rgba(7,22,50,0.88) 40%,rgba(10,28,60,0.82) 70%,rgba(4,12,28,0.93) 100%);z-index:0;pointer-events:none}
+.app{position:relative;z-index:1}
 a{text-decoration:none}svg{flex:none}
 .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
-aside{background:#081A2C;border-right:1px solid #1A3A58;padding:28px 14px;display:flex;flex-direction:column;gap:28px;position:sticky;top:0;height:100vh}
+aside{background:rgba(8,26,44,0.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-right:1px solid rgba(26,58,88,0.7);padding:28px 14px;display:flex;flex-direction:column;gap:28px;position:sticky;top:0;height:100vh}
 .brand{text-align:center}.brand .n{font-size:26px;font-weight:700;color:#fff}.brand .n span,h1 span{color:#38D0F5}.brand small{font-size:12px;color:#9FB6C8}
 .nav{display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:10px;color:#C5D6E4;font-size:15px;font-weight:500;margin-bottom:6px}
 .nav:hover{background:#12304D}.nav.on{background:#14406A;color:#fff;border:1px solid #2A6FA8}
-header.top{padding:18px 40px;border-bottom:1px solid #1A3A58;font-size:20px;font-weight:600;color:#fff}
+header.top{padding:18px 40px;border-bottom:1px solid rgba(26,58,88,0.7);font-size:20px;font-weight:600;color:#fff;background:rgba(8,22,44,0.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .hero{padding:36px 40px 0}h1{margin:0;font-size:52px;font-weight:700;color:#fff}
 .hero .sub{font-size:21px;margin-top:6px;color:#fff}.hero p{margin:14px 0 0;max-width:640px;font-size:16px;line-height:1.5;color:#C5D6E4}
 .pg{padding:24px 40px 40px;display:flex;flex-direction:column;gap:24px}
 .pt{padding:28px 40px 0;margin:0;font-size:30px;color:#fff}
 .row{display:grid;gap:24px}.r1{grid-template-columns:minmax(0,2fr) minmax(260px,1fr)}.r2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
-.card{background:linear-gradient(180deg,#0F2A45,#0B2038);border:1px solid #1F4468;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.card{background:linear-gradient(180deg,rgba(15,42,69,0.75),rgba(11,32,56,0.75));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(31,68,104,0.8);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
 .ch{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 22px;border-bottom:1px solid #1F4468;background:#102C49;flex-wrap:wrap}
 .ch h2{margin:0;font-size:18px;font-weight:600;color:#fff}.ch p{margin:2px 0 0;font-size:13px;color:#C5D6E4}
 .bd{padding:20px 22px;display:flex;flex-direction:column;gap:14px}.mut{font-size:13px;color:#B4C7D6;line-height:1.5;margin:0}
@@ -107,42 +109,66 @@ table{font-size:12.5px}th,td{padding:7px 10px}
 </aside>
 
 <div>
-<header class="top">AI4I Predictive Maintenance</header>
+<header class="top"></header>
 
 <!-- ============ DASHBOARD ============ -->
 <div data-view="dashboard">
 <section class="hero">
 <h1>Makina <span>Sense</span></h1>
 <div class="sub">AI-Powered Predictive Maintenance for Industrial Machines</div>
-<p>Upload a machine dataset and get, for every row: failure probability, failure yes/no, risk level, failure type and the recommended maintenance action.</p>
-<p style="margin-top:18px"><a class="btn" href="#dataset">Analyze a dataset</a></p>
+<p>Predict machine failures early, reduce downtime, and optimize maintenance using machine learning.</p>
+<p style="margin-top:18px"><a class="btn" href="#dataset" id="dash-cta">Analyze a dataset ›</a></p>
 </section>
-<div class="pg">
-<div class="row r1">
-<section class="card">
-<div class="ch"><div><h2>Model Performance — Random Forest (Failure Prediction)</h2><p>Test set of 2,500 rows (failure_detection notebook)</p></div></div>
-<div class="stats">
-<div class="stat"><span>Accuracy</span><b id="m-acc"></b></div>
-<div class="stat"><span>Precision</span><b id="m-pre"></b></div>
-<div class="stat"><span>Recall</span><b id="m-rec"></b></div>
-<div class="stat"><span>F1-Score</span><b id="m-f1"></b></div>
+
+<!-- Empty state (shown when no data yet) -->
+<div id="dash-empty" class="pg">
+  <div style="text-align:center;padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:16px">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#38D0F5" stroke-width="1.3" opacity="0.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>
+    <b style="font-size:20px;color:#fff">No data analyzed yet</b>
+    <span style="color:#9FB6C8;font-size:14px;max-width:400px">Upload a CSV dataset from the <a href="#dataset" style="color:#38D0F5">Dataset Analysis</a> tab to see your machine health overview here.</span>
+  </div>
 </div>
-</section>
-<section class="card">
-<div class="ch"><h2>Models</h2></div>
-<div class="bd">
-<div><span class="pill">Model 1 · Failure / Not Failure</span><span class="pill">4 type models · TWF, HDF, PWF, OSF</span></div>
-<p class="mut">The type models only run on rows where Model 1 predicts a failure.</p>
-</div>
-</section>
-</div>
-<section class="card">
-<div class="ch"><div><h2>Failure type models</h2><p>F1 on the single test split and on 5-fold cross-validation (failure_type notebook)</p></div></div>
-<div class="tw"><table>
-<thead><tr><th>Type</th><th>Name</th><th class="n">Test F1</th><th class="n">CV F1</th><th>Reliability</th></tr></thead>
-<tbody id="typetbl"></tbody></table></div>
-<div class="bd"><p class="mut">RNF (random failure) is not modelled: it is random by design in the dataset, so no sensor pattern can predict it.</p></div>
-</section>
+
+<!-- Dynamic data dashboard (shown after analysis) -->
+<div id="dash-data" class="pg" hidden>
+  <!-- KPI bar -->
+  <section class="card">
+    <div class="ch"><div><h2 id="dash-title">Dataset Overview</h2><p id="dash-subtitle">Last analyzed dataset</p></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <span id="dash-source-badge" style="font-size:11px;padding:3px 10px;border-radius:20px;background:#12304D;border:1px solid #2A6FA8;color:#38D0F5;white-space:nowrap"></span>
+        <button class="sec" id="dash-clear" style="height:28px;font-size:12px;display:none" onclick="clearSingleHistory()">Clear History</button>
+        <a href="#dataset" style="font-size:12.5px;color:#38D0F5;white-space:nowrap">Re-analyze ›</a>
+      </div></div>
+    <div class="stats" id="dash-kpis"></div>
+  </section>
+
+  <!-- Risk + Types -->
+  <div class="row r2">
+    <section class="card">
+      <div class="ch"><h2>Risk Level Distribution</h2></div>
+      <div class="bd" id="dash-risk"></div>
+    </section>
+    <section class="card">
+      <div class="ch"><h2>Predicted Failure Types</h2></div>
+      <div class="bd" id="dash-types"></div>
+    </section>
+  </div>
+
+  <!-- Accuracy (only if labels present) -->
+  <section class="card" id="dash-metcard" hidden>
+    <div class="ch"><div><h2>Model Accuracy on Your Data</h2><p>Compared with real labels found in the file</p></div></div>
+    <div class="stats" id="dash-metstats"></div>
+    <div class="bd" style="flex-direction:row;flex-wrap:wrap;gap:32px;align-items:flex-start">
+      <div class="cm" id="dash-cm"></div>
+      <div style="flex:1;min-width:220px;display:flex;flex-direction:column;gap:10px" id="dash-typemetrics"></div>
+    </div>
+  </section>
+
+  <!-- Top failing machines -->
+  <section class="card" id="dash-topcard">
+    <div class="ch"><h2>Top 10 Highest-Risk Machines</h2></div>
+    <div class="tw"><table id="dash-toptbl"></table></div>
+  </section>
 </div>
 </div>
 
@@ -234,16 +260,137 @@ function route() {
 }
 addEventListener("hashchange", route); route();
 
-/* ---- dashboard reference numbers ---- */
-$("#m-acc").textContent = pct(REF.failure.accuracy, 2); $("#m-pre").textContent = pct(REF.failure.precision, 2);
-$("#m-rec").textContent = pct(REF.failure.recall, 2);   $("#m-f1").textContent = pct(REF.failure.f1, 2);
-$("#typetbl").innerHTML = Object.entries(REF.types).map(([t, m]) =>
-  `<tr><td>${t}</td><td>${esc(NAMES[t])}</td><td class="n">${m.f1.toFixed(3)}</td><td class="n">${m.cv.toFixed(3)}</td>
-   <td>${WEAK[t] ? '<span class="weak">Unreliable — rarely detected</span>' : "Good"}</td></tr>`).join("");
+/* ---- shared state ---- */
+const fileIn = $("#file"), drop = $("#drop");
+let DATA = null, SINGLE_HISTORY = [], page = 0, rowsShown = [];
+const PAGE = 25;
+
+/* ---- helpers (defined early so dashboard can use them) ---- */
+const stat = (label, val) => `<div class="stat"><span>${label}</span><b>${val}</b></div>`;
+const bars = (obj, total, hitCls) => Object.entries(obj).map(([k, v]) =>
+  `<div><div class="t"><span>${esc(k)}${WEAK[k] ? ' <span class="weak">low reliability</span>' : ""}</span><b>${v.toLocaleString()} · ${total ? pct(v / total) : "0%"}</b></div>
+   <div class="bar"><i class="${hitCls}" style="width:${total ? v / total * 100 : 0}%"></i></div></div>`).join("");
+
+/* ---- dashboard renderer for DATASET ---- */
+/* ---- dashboard renderer for DATASET ---- */
+function renderDashboard() {
+  if (!DATA) return;
+  const d = DATA;
+  const lab = d.rows[0] && d.rows[0].actual !== undefined;
+  const failRate = d.n ? d.failures / d.n : 0;
+  const highRisk = (d.risk.High || 0) + (d.risk.Critical || 0);
+
+  // Show data panel, hide empty
+  $("#dash-empty").hidden = true;
+  $("#dash-data").hidden = false;
+  $("#dash-source-badge").textContent = `📊 Dataset · ${d.n.toLocaleString()} rows`;
+  $("#dash-clear").style.display = "none";
+  // Subtitle
+  const fn = fileIn.files[0] ? fileIn.files[0].name : "uploaded file";
+  $("#dash-title").textContent = "Dataset Overview — " + fn;
+  $("#dash-subtitle").textContent = `${d.n.toLocaleString()} machines · threshold ${d.threshold ? (+d.threshold).toFixed(2) : "0.50"}`;
+
+  // KPIs
+  const kpiColor = v => v >= 0.3 ? "#FCA5A5" : v >= 0.1 ? "#FDE7B0" : "#86EFAC";
+  $("#dash-kpis").innerHTML =
+    stat("Machines Analyzed", d.n.toLocaleString()) +
+    stat("Predicted Failures", `<span style="color:${kpiColor(failRate)}">${d.failures.toLocaleString()}</span>`) +
+    stat("Failure Rate", `<span style="color:${kpiColor(failRate)}">${pct(failRate)}</span>`) +
+    stat("High & Critical Risk", `<span style="color:${highRisk > 0 ? '#FCA5A5' : '#86EFAC'}">${highRisk.toLocaleString()}</span>`) +
+    (lab && d.metrics ? stat("Accuracy on File", `<span style="color:#38D0F5">${pct(d.metrics.accuracy, 2)}</span>`) : "");
+
+  // Risk bars
+  $("#dash-risk").innerHTML = bars(d.risk, d.n, "");
+
+  // Failure type bars
+  $("#dash-types").innerHTML = d.failures > 0
+    ? bars(d.types, d.failures, "hit") + `<p class="mut">Percentages are out of predicted failures.</p>`
+    : `<p class="mut" style="text-align:center;padding:20px">No failures predicted in this dataset.</p>`;
+
+  // Accuracy metrics (only if labels present)
+  const m = d.metrics;
+  $("#dash-metcard").hidden = !m || !lab;
+  if (m && lab) {
+    $("#dash-metstats").innerHTML =
+      stat("Accuracy", pct(m.accuracy, 2)) + stat("Precision", pct(m.precision, 2)) +
+      stat("Recall", pct(m.recall, 2)) + stat("F1-Score", pct(m.f1, 2));
+    $("#dash-cm").innerHTML = `<div></div><div><b style="font-size:12px;color:#9FC3DD">Pred: no failure</b></div><div><b style="font-size:12px;color:#9FC3DD">Pred: failure</b></div>
+      <div style="text-align:right;color:#9FC3DD">Real: no failure</div><div class="c g"><b>${m.tn}</b>correct</div><div class="c b"><b>${m.fp}</b>false alarms</div>
+      <div style="text-align:right;color:#9FC3DD">Real: failure</div><div class="c b"><b>${m.fn}</b>missed</div><div class="c g"><b>${m.tp}</b>caught</div>`;
+    $("#dash-typemetrics").innerHTML = Object.entries(m.types).map(([t, x]) =>
+      `<div><div class="t"><span>${t} · ${esc(NAMES[t])}</span><b>F1: ${x.f1.toFixed(2)}</b></div>
+       <div class="bar"><i class="hit" style="width:${x.f1 * 100}%"></i></div></div>`).join("") || `<p class="mut">No type label columns in the file.</p>`;
+  }
+
+  // Top 10 highest-risk machines
+  const top10 = [...d.rows].sort((a, b) => b.prob - a.prob).slice(0, 10);
+  $("#dash-toptbl").innerHTML = `<thead><tr><th>ID</th><th>Type</th><th class="n">Failure Prob.</th><th>Risk</th><th>Failure Type</th><th>Action</th></tr></thead><tbody>` +
+    top10.map(r => `<tr><td>${esc(r.id)}</td><td>${esc(r.type)}</td><td class="n"><b style="color:#38D0F5">${pct(r.prob)}</b></td>
+      <td><span class="badge ${r.risk}">${r.risk}</span></td>
+      <td>${esc(r.types.join(" + ") || "—")}</td><td>${esc(r.action || "—")}</td></tr>`).join("") + "</tbody>";
+}
+
+/* ---- dashboard renderer for SINGLE MACHINE history ---- */
+function renderDashboardSingle() {
+  if (DATA) return; // Dataset takes priority
+  if (!SINGLE_HISTORY.length) return;
+  const h = SINGLE_HISTORY;
+  const failures = h.filter(r => r.failure).length;
+  const failRate = h.length ? failures / h.length : 0;
+  const risk = {Low: 0, Medium: 0, High: 0, Critical: 0};
+  h.forEach(r => { risk[r.risk_level] = (risk[r.risk_level] || 0) + 1; });
+  const types = {TWF: 0, HDF: 0, PWF: 0, OSF: 0, Unclassified: 0};
+  h.forEach(r => {
+    if (r.failure) {
+      if (r.predicted_types && r.predicted_types.length) r.predicted_types.forEach(t => { types[t] = (types[t] || 0) + 1; });
+      else types.Unclassified++;
+    }
+  });
+  const highRisk = (risk.High || 0) + (risk.Critical || 0);
+
+  $("#dash-empty").hidden = true;
+  $("#dash-data").hidden = false;
+  $("#dash-source-badge").textContent = `⚡ Single Machine · ${h.length} test${h.length > 1 ? 's' : ''}`;
+  $("#dash-clear").style.display = "";
+  $("#dash-title").textContent = "Single Machine Testing Overview";
+  $("#dash-subtitle").textContent = `${h.length} machine${h.length > 1 ? 's' : ''} tested — results accumulate with each prediction`;
+
+  const kpiColor = v => v >= 0.3 ? "#FCA5A5" : v >= 0.1 ? "#FDE7B0" : "#86EFAC";
+  $("#dash-kpis").innerHTML =
+    stat("Machines Tested", h.length.toLocaleString()) +
+    stat("Predicted Failures", `<span style="color:${kpiColor(failRate)}">${failures}</span>`) +
+    stat("Failure Rate", `<span style="color:${kpiColor(failRate)}">${pct(failRate)}</span>`) +
+    stat("High & Critical Risk", `<span style="color:${highRisk > 0 ? '#FCA5A5' : '#86EFAC'}">${highRisk}</span>`);
+
+  $("#dash-risk").innerHTML = bars(risk, h.length, "");
+
+  const activeTypes = Object.fromEntries(Object.entries(types).filter(([,v]) => v > 0));
+  $("#dash-types").innerHTML = failures > 0 && Object.keys(activeTypes).length
+    ? bars(activeTypes, failures, "hit") + `<p class="mut">Percentages are out of predicted failures.</p>`
+    : `<p class="mut" style="text-align:center;padding:20px">${failures > 0 ? 'No specific types detected.' : 'No failures predicted yet.'}</p>`;
+
+  $("#dash-metcard").hidden = true;
+
+  // All tests table, sorted by prob descending
+  const sorted = [...h].map((r, i) => ({idx: i+1, ...r})).sort((a, b) => b.failure_probability - a.failure_probability).slice(0, 10);
+  $("#dash-toptbl").innerHTML = `<thead><tr><th>#</th><th>Type</th><th class="n">Air [K]</th><th class="n">RPM</th><th class="n">Torque</th><th class="n">Prob.</th><th>Risk</th><th>Failure Type</th></tr></thead><tbody>` +
+    sorted.map(r => `<tr><td>Test ${r.idx}</td><td>${esc(r._input.machine_type || '?')}</td>
+      <td class="n">${r._input.air || '—'}</td><td class="n">${r._input.rpm || '—'}</td><td class="n">${r._input.torque || '—'}</td>
+      <td class="n"><b style="color:#38D0F5">${pct(r.failure_probability)}</b></td>
+      <td><span class="badge ${r.risk_level}">${r.risk_level}</span></td>
+      <td>${esc((r.predicted_types || []).join(" + ") || (r.failure ? 'Unclassified' : '—'))}</td></tr>`).join("") + "</tbody>";
+}
+
+function clearSingleHistory() {
+  SINGLE_HISTORY = [];
+  $("#dash-empty").hidden = false;
+  $("#dash-data").hidden = true;
+  $("#dash-clear").style.display = "none";
+}
 
 /* ---- single machine ---- */
 const f = $("#f"), res = $("#res");
-function show(r) {
+function show(r, formData) {
   let h = `<div class="big">${pct(r.failure_probability)}</div>
     <div><span class="badge ${esc(r.risk_level)}">${esc(r.risk_level)} risk</span></div>
     <div>${r.failure ? "Failure predicted." : "No failure predicted."}</div>`;
@@ -254,32 +401,29 @@ function show(r) {
     h += r.predicted_types.map((t, i) => `<div class="act"><b>${esc(r.type_names[t])}</b>${esc(r.actions[i])}</div>`).join("");
   }
   res.innerHTML = h;
+  // Add to single history and update dashboard
+  SINGLE_HISTORY.push({...r, _input: formData || {}});
+  renderDashboardSingle();
 }
 f.addEventListener("submit", async e => {
   e.preventDefault(); $("#err").textContent = "";
   $("#go").disabled = true;
+  const formData = Object.fromEntries(new FormData(f));
   try {
-    const r = await fetch("/api/predict", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(Object.fromEntries(new FormData(f)))});
+    const r = await fetch("/api/predict", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(formData)});
     const d = await r.json();
-    if (!r.ok) $("#err").textContent = d.error || "Something went wrong."; else show(d);
+    if (!r.ok) $("#err").textContent = d.error || "Something went wrong."; else show(d, formData);
   } catch { $("#err").textContent = "Cannot reach the server. Is app.py running?"; }
   $("#go").disabled = false;
 });
 
 /* ---- dataset ---- */
-const fileIn = $("#file"), drop = $("#drop");
-let DATA = null, page = 0, rowsShown = [];
-const PAGE = 25;
 fileIn.onchange = () => { $("#fname").textContent = fileIn.files[0] ? fileIn.files[0].name : "No file chosen"; };
 ["dragover", "dragenter"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
 ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
 drop.addEventListener("drop", e => { if (e.dataTransfer.files.length) { fileIn.files = e.dataTransfer.files; fileIn.onchange(); } });
 $("#thr").oninput = () => $("#thrv").textContent = (+$("#thr").value).toFixed(2);
 
-const stat = (label, val) => `<div class="stat"><span>${label}</span><b>${val}</b></div>`;
-const bars = (obj, total, hitCls) => Object.entries(obj).map(([k, v]) =>
-  `<div><div class="t"><span>${esc(k)}${WEAK[k] ? ' <span class="weak">low reliability</span>' : ""}</span><b>${v.toLocaleString()} · ${total ? pct(v / total) : "0%"}</b></div>
-   <div class="bar"><i class="${hitCls}" style="width:${total ? v / total * 100 : 0}%"></i></div></div>`).join("");
 
 $("#az").onclick = async () => {
   const err = $("#derr"); err.textContent = "";
@@ -290,7 +434,7 @@ $("#az").onclick = async () => {
     const r = await fetch("/api/dataset", {method: "POST", body: fd});
     const d = await r.json();
     if (!r.ok) { err.textContent = d.error || "Something went wrong."; }
-    else { DATA = d; render(); }
+    else { DATA = d; render(); renderDashboard(); }
   } catch { err.textContent = "Cannot reach the server. Is app.py running?"; }
   $("#az").disabled = false; $("#az").textContent = "Analyze dataset";
 };
