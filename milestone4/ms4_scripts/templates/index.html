@@ -97,6 +97,17 @@ body{font-size:14px;min-height:0}
 .app.collapsed{
   grid-template-columns:0px 1fr;
 }
+.app>div{
+  height:100vh;
+  overflow-y:auto;
+  overflow-x:hidden;
+  min-width:0;
+  scroll-behavior:smooth;
+}
+.app>div::-webkit-scrollbar{width:8px}
+.app>div::-webkit-scrollbar-track{background:rgba(4,12,24,0.3)}
+.app>div::-webkit-scrollbar-thumb{background:rgba(42,111,168,0.5);border-radius:4px}
+.app>div::-webkit-scrollbar-thumb:hover{background:#38D0F5}
 aside{
   width:235px;
   overflow:hidden;
@@ -492,14 +503,36 @@ table{font-size:12.5px}th,td{padding:7px 10px}
 <h2 class="pt">Dataset Analysis</h2>
 <div class="pg">
 <section class="card">
-<div class="ch"><div><h2>Upload a dataset</h2><p>CSV in the same format as ai4i2020 — every row is predicted.</p></div></div>
+<div class="ch"><div><h2>Upload a dataset</h2><p>CSV file — every row is predicted. Choose the correct input format below.</p></div></div>
 <div class="bd">
 <label id="drop" for="file"><b>Choose a CSV file or drag it here</b><span id="fname">No file chosen</span></label>
 <input id="file" type="file" accept=".csv,text/csv" hidden>
+
+<!-- Input format selector -->
+<div style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px solid rgba(56,208,245,0.25);border-radius:10px;background:rgba(12,34,57,0.6)">
+  <div style="font-size:13px;font-weight:600;color:#38D0F5;margin-bottom:2px">📋 Input Format</div>
+  <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13.5px;font-weight:500;color:#E6F1FA">
+    <input type="radio" name="input_mode" id="mode-raw" value="raw" checked style="margin-top:3px;accent-color:#38D0F5">
+    <span>
+      <b style="color:#fff">Raw Data (Unscaled)</b><br>
+      <span style="color:#9FB6C8;font-size:12px">Standard sensor readings. The app will run feature engineering and StandardScaler automatically.<br>
+      Required: <code style="color:#38D0F5">Type, Air temperature [K], Process temperature [K], Rotational speed [rpm], Torque [Nm], Tool wear [min]</code></span>
+    </span>
+  </label>
+  <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13.5px;font-weight:500;color:#E6F1FA">
+    <input type="radio" name="input_mode" id="mode-scaled" value="scaled" style="margin-top:3px;accent-color:#38D0F5">
+    <span>
+      <b style="color:#fff">Preprocessed Data (Already Scaled)</b><br>
+      <span style="color:#9FB6C8;font-size:12px">Data already processed through the Milestone-3 pipeline (e.g. <em>test_ready_milestone3.csv</em>). No transformations will be applied.<br>
+      Required: <code style="color:#38D0F5">Type, Air temperature [K], Process temperature [K], Rotational speed [rpm], Torque [Nm], Tool wear [min], Temp_Diff, Mechanical_Power_W, Strain_Index</code></span>
+    </span>
+  </label>
+</div>
+
 <label class="fld" style="max-width:420px">Failure threshold: <span id="thrv">0.50</span>
 <input id="thr" type="range" min="0.1" max="0.9" step="0.05" value="0.5" style="accent-color:#38D0F5;padding:0"></label>
-<p class="mut"><b>Required columns:</b> Type (L/M/H), Air temperature [K], Process temperature [K], Rotational speed [rpm], Torque [Nm], Tool wear [min].<br>
-<b>Optional:</b> Product ID, and Machine failure / TWF / HDF / PWF / OSF — if present, the real accuracy, recall and F1 on your file are calculated.</p>
+<p class="mut"><b>Optional column:</b> <code>Machine failure</code> (0/1) — if present, the app computes real accuracy, precision, recall, and F1 on your file.
+<br>Also optional: <code>Product ID</code>, <code>TWF</code>, <code>HDF</code>, <code>PWF</code>, <code>OSF</code> for per-type metrics.</p>
 <p class="err" id="derr" role="alert"></p>
 <div><button id="az">Analyze dataset</button></div>
 </div>
@@ -627,18 +660,9 @@ const fileIn = $("#file"), drop = $("#drop");
 let DATA = null, page = 0, rowsShown = [];
 const PAGE = 25;
 
-/* ---- localStorage for single history ---- */
-function saveSingleHistory() {
-  try { localStorage.setItem('makina_single_history', JSON.stringify(SINGLE_HISTORY)); } catch(e){}
-}
-function loadSingleHistory() {
-  try {
-    const s = localStorage.getItem('makina_single_history');
-    if (s) { SINGLE_HISTORY = JSON.parse(s); if (SINGLE_HISTORY.length) renderDashboardSingle(); }
-  } catch(e){ SINGLE_HISTORY = []; }
-}
+// Clear any previously persisted single history so refresh always starts fresh
+try { localStorage.removeItem('makina_single_history'); } catch(e){}
 let SINGLE_HISTORY = [];
-loadSingleHistory();
 
 /* ---- helpers (defined early so dashboard can use them) ---- */
 const stat = (label, val, dataVal='', dataSuf='') =>
@@ -763,6 +787,7 @@ function renderDashboardSingle() {
 
 function clearSingleHistory() {
   SINGLE_HISTORY = [];
+  try { localStorage.removeItem('makina_single_history'); } catch(e){}
   $("#dash-empty").hidden = false;
   $("#dash-data").hidden = true;
   $("#dash-clear").style.display = "none";
@@ -850,7 +875,6 @@ function show(r, formData) {
   else if (!r.failure) toast('✅ Machine is operating normally.', 'ok', 3000);
   // Add to single history and update dashboard
   SINGLE_HISTORY.push({...r, _input: formData || {}});
-  saveSingleHistory();
   renderDashboardSingle();
 }
 f.addEventListener("submit", async e => {
@@ -876,17 +900,28 @@ $("#thr").oninput = () => $("#thrv").textContent = (+$("#thr").value).toFixed(2)
 $("#az").onclick = async () => {
   const err = $("#derr"); err.textContent = "";
   if (!fileIn.files[0]) { err.textContent = "Choose a CSV file first."; return; }
-  const fd = new FormData(); fd.append("file", fileIn.files[0]); fd.append("threshold", $("#thr").value);
+
+  // Read which input format the user selected
+  const modeEl = document.querySelector('input[name="input_mode"]:checked');
+  const mode = modeEl ? modeEl.value : "raw";
+
+  const fd = new FormData();
+  fd.append("file", fileIn.files[0]);
+  fd.append("threshold", $("#thr").value);
+  fd.append("mode", mode);
+
   $("#az").disabled = true; $("#az").textContent = "Analyzing…";
   $("#loading-overlay").hidden = false;
-  $("#loading-msg").textContent = `Analyzing ${fileIn.files[0].name}…`;
+  const modeLabel = mode === "scaled" ? "pre-scaled" : "raw";
+  $("#loading-msg").textContent = `Analyzing ${fileIn.files[0].name} (${modeLabel} mode)…`;
   try {
     const r = await fetch("/api/dataset", {method: "POST", body: fd});
     const d = await r.json();
     if (!r.ok) { err.textContent = d.error || "Something went wrong."; }
     else {
       DATA = d; render(); renderDashboard();
-      toast(`✅ Dataset analyzed: ${d.n.toLocaleString()} rows, ${d.failures} failure${d.failures !== 1 ? 's' : ''} detected.`, 'ok', 5000);
+      const modeTag = d.mode === "scaled" ? " · pre-scaled input" : " · raw input";
+      toast(`✅ Dataset analyzed: ${d.n.toLocaleString()} rows, ${d.failures} failure${d.failures !== 1 ? 's' : ''} detected${modeTag}.`, 'ok', 5000);
       if (d.risk && (d.risk.Critical || 0) > 0) toast(`🔴 ${d.risk.Critical} Critical risk machine${d.risk.Critical > 1 ? 's' : ''} found!`, 'critical', 7000);
     }
   } catch { err.textContent = "Cannot reach the server. Is app.py running?"; }
