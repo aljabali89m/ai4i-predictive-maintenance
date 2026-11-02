@@ -503,40 +503,28 @@ table{font-size:12.5px}th,td{padding:7px 10px}
 <h2 class="pt">Dataset Analysis</h2>
 <div class="pg">
 <section class="card">
-<div class="ch"><div><h2>Upload a dataset</h2><p>CSV file — every row is predicted. Choose the correct input format below.</p></div></div>
+<div class="ch"><div><h2>Upload a dataset</h2><p>CSV file — every row is predicted. The format is detected automatically.</p></div></div>
 <div class="bd">
 <label id="drop" for="file"><b>Choose a CSV file or drag it here</b><span id="fname">No file chosen</span></label>
 <input id="file" type="file" accept=".csv,text/csv" hidden>
-
-<!-- Input format selector -->
-<div style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px solid rgba(56,208,245,0.25);border-radius:10px;background:rgba(12,34,57,0.6)">
-  <div style="font-size:13px;font-weight:600;color:#38D0F5;margin-bottom:2px">📋 Input Format</div>
-  <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13.5px;font-weight:500;color:#E6F1FA">
-    <input type="radio" name="input_mode" id="mode-raw" value="raw" checked style="margin-top:3px;accent-color:#38D0F5">
-    <span>
-      <b style="color:#fff">Raw Data (Unscaled)</b><br>
-      <span style="color:#9FB6C8;font-size:12px">Standard sensor readings. The app will run feature engineering and StandardScaler automatically.<br>
-      Required: <code style="color:#38D0F5">Type, Air temperature [K], Process temperature [K], Rotational speed [rpm], Torque [Nm], Tool wear [min]</code></span>
-    </span>
-  </label>
-  <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13.5px;font-weight:500;color:#E6F1FA">
-    <input type="radio" name="input_mode" id="mode-scaled" value="scaled" style="margin-top:3px;accent-color:#38D0F5">
-    <span>
-      <b style="color:#fff">Preprocessed Data (Already Scaled)</b><br>
-      <span style="color:#9FB6C8;font-size:12px">Data already processed through the Milestone-3 pipeline (e.g. <em>test_ready_milestone3.csv</em>). No transformations will be applied.<br>
-      Required: <code style="color:#38D0F5">Type, Air temperature [K], Process temperature [K], Rotational speed [rpm], Torque [Nm], Tool wear [min], Temp_Diff, Mechanical_Power_W, Strain_Index</code></span>
-    </span>
-  </label>
+<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1px solid rgba(56,208,245,0.18);border-radius:10px;background:rgba(12,34,57,0.5);font-size:12.5px;color:#9FB6C8;line-height:1.6">
+  <span style="font-size:18px;line-height:1">🤖</span>
+  <span>
+    <b style="color:#38D0F5;display:block;margin-bottom:3px">Auto-detected format</b>
+    The app detects the CSV format automatically:<br>
+    &bull; <b style="color:#fff">Raw sensor data</b> — columns: <code>Type, Air temperature [K], Process temperature [K], Rotational speed [rpm], Torque [Nm], Tool wear [min]</code><br>
+    &bull; <b style="color:#fff">Pre-processed data</b> — same columns + <code>Temp_Diff, Mechanical_Power_W, Strain_Index</code> (e.g. <em>test_ready_milestone3.csv</em>)
+  </span>
 </div>
-
 <label class="fld" style="max-width:420px">Failure threshold: <span id="thrv">0.50</span>
 <input id="thr" type="range" min="0.1" max="0.9" step="0.05" value="0.5" style="accent-color:#38D0F5;padding:0"></label>
-<p class="mut"><b>Optional column:</b> <code>Machine failure</code> (0/1) — if present, the app computes real accuracy, precision, recall, and F1 on your file.
-<br>Also optional: <code>Product ID</code>, <code>TWF</code>, <code>HDF</code>, <code>PWF</code>, <code>OSF</code> for per-type metrics.</p>
+<p class="mut"><b>Optional:</b> <code>Machine failure</code> (0/1) column enables accuracy metrics. Also optional: <code>Product ID</code>, <code>TWF</code>, <code>HDF</code>, <code>PWF</code>, <code>OSF</code>.</p>
 <p class="err" id="derr" role="alert"></p>
+<div id="detect-badge" hidden style="font-size:12px;padding:5px 12px;border-radius:20px;background:#12304D;border:1px solid #2A6FA8;color:#38D0F5;display:inline-block;margin-bottom:4px"></div>
 <div><button id="az">Analyze dataset</button></div>
 </div>
 </section>
+
 
 <div id="out" hidden style="display:flex;flex-direction:column;gap:24px">
 <section class="card"><div class="stats" id="sum"></div></section>
