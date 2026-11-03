@@ -518,7 +518,7 @@ table{font-size:12.5px}th,td{padding:7px 10px}
 </div>
 <label class="fld" style="max-width:420px">Failure threshold: <span id="thrv">0.50</span>
 <input id="thr" type="range" min="0.1" max="0.9" step="0.05" value="0.5" style="accent-color:#38D0F5;padding:0"></label>
-<p class="mut"><b>Optional:</b> <code>Machine failure</code> (0/1) column enables accuracy metrics. Also optional: <code>Product ID</code>, <code>TWF</code>, <code>HDF</code>, <code>PWF</code>, <code>OSF</code>.</p>
+<p class="mut"><b>Optional:</b> <code>Product ID</code> column (for display and tracking).</p>
 <p class="err" id="derr" role="alert"></p>
 <div id="detect-badge" hidden style="font-size:12px;padding:5px 12px;border-radius:20px;background:#12304D;border:1px solid #2A6FA8;color:#38D0F5;display:inline-block;margin-bottom:4px"></div>
 <div><button id="az">Analyze dataset</button></div>
@@ -532,15 +532,7 @@ table{font-size:12.5px}th,td{padding:7px 10px}
 <section class="card"><div class="ch"><h2>Risk levels</h2></div><div class="bd" id="riskbars"></div></section>
 <section class="card"><div class="ch"><h2>Predicted failure types</h2></div><div class="bd" id="typebars"></div></section>
 </div>
-<section class="card" id="metcard" hidden>
-<div class="ch"><div><h2>Accuracy on your file</h2><p>Compared with the real labels in the uploaded file</p></div></div>
-<div class="stats" id="metstats"></div>
-<div class="bd" style="flex-direction:row;flex-wrap:wrap;gap:32px;align-items:flex-start">
-<div class="cm" id="cm"></div>
-<div class="tw" style="flex:1;min-width:280px"><table><thead><tr><th>Type</th><th class="n">Real cases</th><th class="n">Precision</th><th class="n">Recall</th><th class="n">F1</th></tr></thead><tbody id="mettypes"></tbody></table></div>
-</div>
-<div class="bd"><div class="warn">If this file is the original dataset, about 80% of its rows were used to train the models, so these scores look better than they would on new machines. Use data the models never saw for an honest score.</div></div>
-</section>
+
 <section class="card">
 <div class="ch"><h2>Predictions</h2>
 <div style="display:flex;gap:10px;flex-wrap:wrap"><select class="sel" id="flt" aria-label="Filter rows"></select><button class="sec" id="dl">Download CSV</button></div></div>
@@ -889,19 +881,15 @@ $("#az").onclick = async () => {
   const err = $("#derr"); err.textContent = "";
   if (!fileIn.files[0]) { err.textContent = "Choose a CSV file first."; return; }
 
-  // Read which input format the user selected
-  const modeEl = document.querySelector('input[name="input_mode"]:checked');
-  const mode = modeEl ? modeEl.value : "raw";
-
   const fd = new FormData();
   fd.append("file", fileIn.files[0]);
   fd.append("threshold", $("#thr").value);
-  fd.append("mode", mode);
+  const modeEl = document.querySelector('input[name="input_mode"]:checked');
+  if (modeEl && modeEl.value) fd.append("mode", modeEl.value);
 
   $("#az").disabled = true; $("#az").textContent = "Analyzing…";
   $("#loading-overlay").hidden = false;
-  const modeLabel = mode === "scaled" ? "pre-scaled" : "raw";
-  $("#loading-msg").textContent = `Analyzing ${fileIn.files[0].name} (${modeLabel} mode)…`;
+  $("#loading-msg").textContent = `Analyzing ${fileIn.files[0].name}…`;
   try {
     const r = await fetch("/api/dataset", {method: "POST", body: fd});
     const d = await r.json();
@@ -924,15 +912,7 @@ function render() {
     stat("Failure rate", pct(d.failures / d.n)) + stat("High + Critical risk", (d.risk.High + d.risk.Critical).toLocaleString());
   $("#riskbars").innerHTML = bars(d.risk, d.n, "");
   $("#typebars").innerHTML = bars(d.types, d.failures, "hit") + `<p class="mut">Percentages are out of predicted failures. A failure can have two types at once.</p>`;
-  const m = d.metrics; $("#metcard").hidden = !m;
-  if (m) {
-    $("#metstats").innerHTML = stat("Accuracy", pct(m.accuracy, 2)) + stat("Precision", pct(m.precision, 2)) + stat("Recall", pct(m.recall, 2)) + stat("F1-Score", pct(m.f1, 2));
-    $("#cm").innerHTML = `<div></div><div><b style="font-size:13px;color:#9FC3DD">Predicted: no failure</b></div><div><b style="font-size:13px;color:#9FC3DD">Predicted: failure</b></div>
-      <div style="text-align:right;color:#9FC3DD">Real: no failure</div><div class="c g"><b>${m.tn}</b>correct</div><div class="c b"><b>${m.fp}</b>false alarms</div>
-      <div style="text-align:right;color:#9FC3DD">Real: failure</div><div class="c b"><b>${m.fn}</b>missed failures</div><div class="c g"><b>${m.tp}</b>caught</div>`;
-    $("#mettypes").innerHTML = Object.entries(m.types).map(([t, x]) =>
-      `<tr><td>${t}</td><td class="n">${x.support}</td><td class="n">${x.precision.toFixed(3)}</td><td class="n">${x.recall.toFixed(3)}</td><td class="n">${x.f1.toFixed(3)}</td></tr>`).join("") || `<tr><td colspan="5">No TWF/HDF/PWF/OSF columns in the file.</td></tr>`;
-  }
+
   $("#flt").innerHTML = `<option value="all">All rows</option><option value="fail">Predicted failures</option>` +
     ["Critical", "High", "Medium", "Low"].map(k => `<option value="${k}">${k} risk</option>`).join("") + (lab ? `<option value="wrong">Wrong predictions</option>` : "");
   page = 0; table();
